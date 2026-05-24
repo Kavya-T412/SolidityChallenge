@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-49e1ba7fd594e48b60085ced1e7be42fb33c2c72",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.5.1"
+  },
+  "userSourceNameMap": {
+    "contracts/QuoteStore.sol": "project/contracts/QuoteStore.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/QuoteStore.sol": {
+        "content": "//SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28 ;\r\n\r\ncontract QuoteStore{\r\n\r\n    uint256 quoteCount; //stores the number of quotes\r\n    struct Quote{\r\n        string author;\r\n        string description;\r\n        uint256 addAt;\r\n    }\r\n\r\n    mapping(address=>Quote) private userQuotes; //maps user address to their quote\r\n    address[] private userAddress; //stores user address\r\n\r\n    // allows users to store the quote\r\n    function storeQuote(string memory _author, string memory _description) public {\r\n        if(bytes(userQuotes[msg.sender].author).length == 0){\r\n            userAddress.push(msg.sender); //add user address to the list if it's their first quote\r\n            quoteCount++;\r\n        }\r\n        userQuotes[msg.sender] = Quote(_author, _description, block.timestamp); \r\n    }\r\n\r\n    //enable users to view their quotes\r\n    function myQuote() public view returns (string memory author, string memory description, uint256 timestamp){\r\n        Quote memory quote = userQuotes[msg.sender];\r\n        return (quote.author, quote.description, quote.addAt);\r\n    }\r\n\r\n    //allows users to update their quote\r\n    function updateQuote (string memory _newAuthor, string memory _newDescription) public{\r\n        userQuotes[msg.sender] = Quote(_newAuthor, _newDescription, block.timestamp);\r\n    }\r\n\r\n    //allows to delete the quote\r\n    function deleteQuote () public {\r\n        delete userQuotes[msg.sender];\r\n    }\r\n\r\n    //allows users to view other's quote\r\n    function viewQuote(address _user) public view returns (string memory author, string memory description, uint256 timestamp){\r\n        Quote memory userQuote = userQuotes[_user];\r\n        return(userQuote.author, userQuote.description, userQuote.addAt);\r\n    }\r\n\r\n    //allows user to view the timestamp of the provided address\r\n    function retriveTimestamp(address _user) public view returns (uint256 timestamp){\r\n        return userQuotes[_user].addAt;\r\n    }\r\n\r\n\r\n}"
+      }
+    }
+  }
+}
