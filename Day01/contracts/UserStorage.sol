@@ -2,8 +2,6 @@
 pragma solidity ^0.8.28;
 
 contract UserStorage{
-  address owner; //stores contract deployer's address
-  
   //struct to hold user details (name and age)
   struct UserData {
     string name;
@@ -12,14 +10,6 @@ contract UserStorage{
 
   mapping(address => UserData) private userDetails; //links user address to their details (struct-UserData)
 
-  constructor() {
-    owner = msg.sender;
-  }
-
-  modifier onlyOwner(){
-    require(msg.sender == owner, "Unauthorized Access");
-    _;
-  }
   //stores user details in the mapping using their address as the key
   function store(string memory _name, uint256 _age) public {
     userDetails[msg.sender] = UserData(_name, _age);

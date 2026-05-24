@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-1d5a95126ea865b705e8fb3e795b2bf1bd7b794c",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.5.1"
+  },
+  "userSourceNameMap": {
+    "contracts/UserStorage.sol": "project/contracts/UserStorage.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/UserStorage.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\ncontract UserStorage{\r\n  //struct to hold user details (name and age)\r\n  struct UserData {\r\n    string name;\r\n    uint256 age;\r\n  }\r\n\r\n  mapping(address => UserData) private userDetails; //links user address to their details (struct-UserData)\r\n\r\n  //stores user details in the mapping using their address as the key\r\n  function store(string memory _name, uint256 _age) public {\r\n    userDetails[msg.sender] = UserData(_name, _age);\r\n  }\r\n  //retrieves user details from the mapping using their address as the key\r\n  function getDetails(address user) public view returns(string memory, uint256){\r\n    UserData memory data = userDetails[user];\r\n    return (data.name,data.age);\r\n  }\r\n  //updates user details in the mapping using their address as the key\r\n  function updateDetails(string memory _name, uint256 _age) public{\r\n    UserData memory updateData = UserData(_name, _age);\r\n    userDetails[msg.sender] = updateData;\r\n  }\r\n  //deletes user details from the mapping using their address as the key\r\n  function deleteDetails() public {\r\n    delete userDetails[msg.sender];\r\n  }\r\n\r\n}"
+      }
+    }
+  }
+}
