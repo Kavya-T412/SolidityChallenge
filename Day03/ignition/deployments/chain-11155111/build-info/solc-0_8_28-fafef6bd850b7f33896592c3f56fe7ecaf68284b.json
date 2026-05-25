@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-fafef6bd850b7f33896592c3f56fe7ecaf68284b",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.5.1"
+  },
+  "userSourceNameMap": {
+    "contracts/DreamVault.sol": "project/contracts/DreamVault.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/DreamVault.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\ncontract DreamVault{\r\n\r\n    address private owner; //stores the address of the contract deployer\r\n    struct Dream{\r\n        string title;\r\n        string description;\r\n        uint256 addAt;\r\n    }\r\n    mapping(address => Dream) private userDreams; //maps each user's address to their dream\r\n    uint256 public dreamCount; //stores the total number of dreams\r\n    address[] private dreamersAddresses; //stores the addresses of all users who have added a dream\r\n\r\n    constructor(){\r\n        owner = msg.sender;\r\n    }\r\n\r\n    modifier onlyOwner(){\r\n        require(msg.sender == owner, \"Only the owner can call this function\");\r\n        _;\r\n    }\r\n    \r\n    // Stores user's dream and verifies if the user's dream is unique then increases dream count\r\n    function storeDream(string memory _title, string memory _description) public{\r\n        if(bytes(userDreams[msg.sender].title).length == 0){\r\n            dreamersAddresses.push(msg.sender);\r\n            dreamCount++;\r\n        }\r\n        userDreams[msg.sender] = Dream(_title, _description, block.timestamp);\r\n    }\r\n    \r\n    // Retrieves the user's dream details\r\n    function viewMyDream() public view returns(string memory, string memory, uint256){\r\n        Dream memory dream = userDreams[msg.sender];\r\n        return(dream.title, dream.description, dream.addAt);\r\n    }\r\n    \r\n    // Updates the user's dream details\r\n    function updateDream(string memory newDream, string memory newDescription) public{\r\n        userDreams[msg.sender] = Dream(newDream, newDescription, block.timestamp);\r\n    }\r\n    \r\n    // Deletes the user's dream and updates the dream count\r\n    function deleteDream() public{\r\n        delete userDreams[msg.sender];\r\n        dreamCount--;\r\n    }\r\n    \r\n    // Retrieves the dream details of a specific user by the owner\r\n    function viewAllDreams(address _dreamer) public view onlyOwner returns(string memory, string memory, uint256){\r\n        Dream memory dream = userDreams[_dreamer];\r\n        return(dream.title, dream.description, dream.addAt);\r\n    }\r\n\r\n    // Retrieves the address of a specific user who has added a dream by the owner using the index of the dreamersAddresses array\r\n    function getDremerAtIndex(uint256 index) public view onlyOwner returns(address){\r\n        require(index < dreamersAddresses.length, \"Index out of bounds\");\r\n        return dreamersAddresses[index];\r\n    }\r\n    \r\n    // Retrieves the addresses of all users who have added a dream by the owner\r\n    function getAllDreamers() public view onlyOwner returns(address[] memory){\r\n        return dreamersAddresses;\r\n    }\r\n\r\n\r\n}"
+      }
+    }
+  }
+}
