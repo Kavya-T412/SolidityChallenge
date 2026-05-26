@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-f254c5d17c19395067de1a1918c9849891c94e92",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.5.1"
+  },
+  "userSourceNameMap": {
+    "contracts/ToDoList.sol": "project/contracts/ToDoList.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/ToDoList.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\n\r\nerror EMPTYTASK(); // Declaring custom error for empty task title\r\n\r\npragma solidity ^0.8.18;\r\n\r\ncontract ToDoList {\r\n\r\n    address private owner; // Store the contract owner's address\r\n    \r\n    struct Task {\r\n        string title;\r\n        bool completed;\r\n        uint256 timestamp;\r\n    }\r\n    mapping(address => Task[]) private userTasks; // Mapping to store tasks for each user\r\n\r\n    constructor(){\r\n        owner = msg.sender;\r\n    }\r\n\r\n    modifier onlyOwner(){\r\n        require(msg.sender == owner, \"Unauthorised Access\");\r\n        _;\r\n    }\r\n\r\n    // Allow users to add a task to their to-do list\r\n    function addTask(string memory _title) public{\r\n        if(bytes(_title).length == 0) revert EMPTYTASK();\r\n        userTasks[msg.sender].push(Task(_title, false, block.timestamp));\r\n    }\r\n\r\n    // Allow users to view their tasks\r\n    function getMyTask() public view returns(Task[] memory){\r\n        return userTasks[msg.sender];\r\n    }\r\n\r\n    // Allow users to mark a task as completed\r\n    function markAsDone(uint256 _indexNo) public{\r\n        userTasks[msg.sender][_indexNo].completed = true;\r\n    }\r\n\r\n    // Allow users to update the title of a task\r\n    function updateTask(uint256 _indexNo, string memory _newTitle) public {\r\n        userTasks[msg.sender][_indexNo] = Task(_newTitle, false, block.timestamp);\r\n    }\r\n\r\n    // Allow users to delete a task from their to-do list\r\n    function deleteTask(uint256 _indexNo) public{\r\n        delete userTasks[msg.sender][_indexNo];\r\n    }\r\n\r\n    // Allow users to delete all tasks from their to-do list\r\n    function deleteAllTasks() public{\r\n        delete userTasks[msg.sender];\r\n    }\r\n\r\n    // Allow users to view a specific task by its index\r\n    function getTaskAtIndex(uint256 _indexNo) public view returns(Task memory){\r\n        return userTasks[msg.sender][_indexNo];\r\n    }\r\n\r\n    // Allow users to view the total number of tasks in their to-do list\r\n    function getTaskCount() public view returns (uint256 taskCount){\r\n        return userTasks[msg.sender].length;\r\n    }\r\n\r\n    // Allow owner to view all tasks of all users\r\n    function getAllTasks(address _user) public view onlyOwner returns(Task[] memory){\r\n        return userTasks[_user];\r\n    }\r\n\r\n\r\n}"
+      }
+    }
+  }
+}
