@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-00ccb75d6b4f4c5fd6656afda9896cfb5c4e0b10",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.5.1"
+  },
+  "userSourceNameMap": {
+    "contracts/WhiteListApp.sol": "project/contracts/WhiteListApp.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/WhiteListApp.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\nerror WHITELIST_EXISTING_USER();\r\nerror WHITELIST_UNAUTHORIZED_ACCESS();\r\n\r\ncontract WhiteListApp{\r\n\r\n    address private owner;\r\n    uint256 public addressCount;\r\n\r\n    mapping(address => bool) private whitelist; // Mapping to store whitelisted addresses\r\n    address[] private userAddress; // Array to store whitelisted addresses \r\n\r\n    constructor(){\r\n        owner = msg.sender;\r\n    }\r\n\r\n    modifier onlyOwner(){\r\n        if(msg.sender != owner){\r\n            revert WHITELIST_UNAUTHORIZED_ACCESS(); \r\n        }\r\n        _;\r\n    }\r\n    \r\n    // Allow users to join the whitelist\r\n    function joinWhitelist() public {\r\n        if(whitelist[msg.sender] == true) revert WHITELIST_EXISTING_USER();\r\n        whitelist[msg.sender] = true;\r\n        addressCount++;\r\n        userAddress.push(msg.sender);\r\n    }\r\n\r\n    // Check if the sender is whitelisted\r\n    function checkIfWhitelisted() public view returns (bool){\r\n        return whitelist[msg.sender];\r\n    }\r\n\r\n    // Check if a specific user is whitelisted\r\n    function checkIfUserIsWhitelisted(address _userAddress) public view returns (bool) {\r\n        return whitelist[_userAddress];\r\n    }\r\n\r\n    // Allow the owner to delete a whitelisted address\r\n    function deleteAddress(address _userAddress) public onlyOwner {\r\n        delete whitelist[_userAddress];\r\n        unchecked {\r\n            addressCount--;\r\n        }\r\n    }\r\n\r\n    // Get the list of all whitelisted users\r\n    function getAllWhitelistedUsers() public view returns (address[] memory) {\r\n        return userAddress;\r\n    }\r\n\r\n    // Get the owner of the contract\r\n    function getOwner() public view returns (address) {\r\n        return owner;\r\n    }\r\n\r\n \r\n}"
+      }
+    }
+  }
+}
