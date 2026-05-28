@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-bb17f44969cc35bf35fe1454cc4d24dcb3dea078",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.6.0"
+  },
+  "userSourceNameMap": {
+    "contracts/SimpleBank.sol": "project/contracts/SimpleBank.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/SimpleBank.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\nerror SIMPLEBANK_UNAUTHORIZED_ACCESS();\r\nerror SIMPLEBANK_ETHAMOUNTISTOOLOW();\r\nerror SIMPLEBANK_INSUFFICIENTBALANCE();\r\n\r\ncontract SimpleBank{\r\n\r\n    address private owner;\r\n    mapping(address => uint256) private userBalance; // mapping to store user balances\r\n\r\n    event ethDeposited(address indexed depositor, uint256 amount); // event for logging deposits\r\n    event ethWithdrawn(address indexed withdrawer, uint256 amount); // event for logging withdrawals\r\n\r\n    constructor(){\r\n        owner = msg.sender;\r\n    }\r\n\r\n    modifier onlyOwner(){\r\n        if (owner != msg.sender){\r\n            revert SIMPLEBANK_UNAUTHORIZED_ACCESS();\r\n        }\r\n        _;\r\n    }\r\n\r\n    // Allows users to deposit ETH\r\n    function depositETH() public payable{\r\n        if(msg.value <= 0) revert SIMPLEBANK_ETHAMOUNTISTOOLOW(); // Check for non-zero deposit\r\n        userBalance[msg.sender] += msg.value; // Update user balance\r\n        emit ethDeposited(msg.sender, msg.value); // Emit event for deposit\r\n    }\r\n\r\n    // Allows users to withdraw ETH\r\n    function withdrawETH(uint256 _ethAmount) public{\r\n        if(userBalance[msg.sender] < _ethAmount) revert SIMPLEBANK_INSUFFICIENTBALANCE(); // Check for sufficient balance\r\n        userBalance[msg.sender] -= _ethAmount; // Update user balance\r\n        (bool success, ) = payable(msg.sender).call{value: _ethAmount}(\"\"); // Transfer ETH to user\r\n        require(success, \"Transfer failed\");\r\n        emit ethWithdrawn(msg.sender, _ethAmount);\r\n    }\r\n\r\n    // Allows users to check their own balance\r\n    function getMyBalance() public view returns (uint256){\r\n        return userBalance[msg.sender];\r\n    }\r\n\r\n    // Allows the owner to check the total balance of the bank\r\n    function getBankBalance() public view onlyOwner returns (uint256){\r\n        return address(this).balance;\r\n    }\r\n\r\n    // Allows the owner to check the balance of any user\r\n    function getUserBalance(address _userAddress) public view onlyOwner returns(uint256){\r\n        return userBalance[_userAddress];\r\n    }\r\n    \r\n    // Allows the owner to transfer ownership of the bank\r\n    function transferOwnership(address _newOwner) public onlyOwner{\r\n        owner = _newOwner;\r\n    }\r\n\r\n    // Allows anyone to check the current owner of the bank\r\n    function getOwner() public view returns (address){\r\n        return owner;\r\n    }\r\n\r\n\r\n}"
+      }
+    }
+  }
+}
