@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-de27302191ffc1f9e529f5c87a3ab0577215ae5b",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.6.0"
+  },
+  "userSourceNameMap": {
+    "contracts/DonationVault.sol": "project/contracts/DonationVault.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/DonationVault.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\nerror DONATIONVAULT_INSUFFECIENTBALANCE(); // Reverted when the owner tries to withdraw but the contract balance is zero\r\nerror DONATIONVAULT_UNAUTHORIZED_ACCESS(); // Reverted when an unauthorized address tries to access owner-only functions\r\nerror DONATIONVAULT_ETHAMOUNTISTOOLOW(); // Reverted when the amount of ETH deposited is zero or negative\r\n\r\ncontract DonationVault{\r\n\r\n    address private owner;\r\n    mapping(address=>uint256) private userDonation; // Links user address to the total amount of ETH they have deposited\r\n\r\n    event newDeposit(uint256 indexed _ethAmount, address _userAddress); // Reverted to indexed for better filtering in event logs\r\n    event ownerWithdrewAll(uint256 indexed ethAmount, address ownerAddress); // Reverted to indexed for better filtering in event logs\r\n\r\n    constructor(){\r\n        owner = msg.sender;\r\n    }\r\n\r\n    modifier onlyOwner(){\r\n        if(msg.sender != owner) revert DONATIONVAULT_UNAUTHORIZED_ACCESS();\r\n        _;\r\n    }\r\n\r\n    // Accepts ETH deposit\r\n    function depositETH() public payable {\r\n        if(msg.value <=0 ) revert DONATIONVAULT_ETHAMOUNTISTOOLOW();\r\n        userDonation[msg.sender] += msg.value;\r\n        emit newDeposit(msg.value, msg.sender);\r\n    }\r\n\r\n    // Allows the owner to withdraw all the ETH from the contract\r\n    function withdrawAll() public onlyOwner{\r\n        uint256 balance = address(this).balance;\r\n        if(balance == 0) revert DONATIONVAULT_INSUFFECIENTBALANCE();\r\n        (bool success, ) = payable(owner).call{value:balance}(\"\");\r\n        require(success, \"Withdraw Failed\");\r\n        emit ownerWithdrewAll(balance,owner);\r\n    }\r\n\r\n    // Returns the total amount of ETH deposited \r\n    function getTotalDeposit() public view onlyOwner returns(uint256){\r\n        return userDonation[address(this)];\r\n    }\r\n\r\n    // Returns the total amount of ETH deposited by the caller\r\n    function getMyDepositHistory() public view returns(uint256){\r\n        return userDonation[msg.sender];\r\n    }\r\n\r\n    // Returns the address of the contract owner\r\n    function getOwner() public view returns(address){\r\n        return owner;\r\n    }\r\n    \r\n    \r\n    \r\n}"
+      }
+    }
+  }
+}
