@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-c596cae80ddd71846fe6df1810009b6299e55156",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.7.0"
+  },
+  "userSourceNameMap": {
+    "contracts/BasicKYC.sol": "project/contracts/BasicKYC.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/BasicKYC.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\nerror BASICKYC_EXISTINGUSER(); // Custom error for existing user registration\r\nerror BASICKYC_USERISVERIFIED(); // Custom error for marking an already verified user as verified again\r\nerror BASICKYC_USERISNOTVERIFIED(); // Custom error for removing verification from a user who is not verified\r\nerror BASICKYC_UNAUTHORIZEDACCESS(); // Custom error for unauthorized access to owner-only functions \r\n\r\ncontract BasicKYC {\r\n    address private owner;\r\n    uint256 public totalUsers; // Records number of users\r\n\r\n    struct User{\r\n        string fname;\r\n        string lname;\r\n        address userAddress;\r\n    }\r\n\r\n    mapping(address => User) userDetails; // Links user address to their details \r\n    mapping(address => bool) userVerification; // Tracks whether a user's address has been verified or not\r\n\r\n    event newUserRegistered(string indexed fname, address indexed userAddress); // Emits when a new user registers\r\n    event newAddressVerified(address indexed userAddress); // Emits when a user's address is marked as verified\r\n    event userDeleted(address indexed userAddress); // Emits when a user's data is deleted, either by the user or the owner\r\n\r\n    constructor(){\r\n        owner = msg.sender;\r\n    }\r\n\r\n    modifier onlyOwner(){\r\n        if(msg.sender != owner) revert BASICKYC_UNAUTHORIZEDACCESS();\r\n        _;\r\n    }\r\n\r\n    // Stores user details\r\n    function register(string memory _fname, string memory _lname, address _userAddress) public{\r\n        if(bytes(userDetails[msg.sender].fname).length != 0) revert BASICKYC_EXISTINGUSER();\r\n        userDetails[msg.sender] = User(_fname, _lname, _userAddress);\r\n        totalUsers++;\r\n        emit newUserRegistered(_fname, _userAddress);\r\n    }\r\n\r\n    // Returns the caller's registered KYC details\r\n    function getMyDetails() public view returns(string memory, string memory, address){\r\n        User memory user = userDetails[msg.sender];\r\n        return (user.fname, user.lname, user.userAddress);\r\n    }\r\n\r\n    // Allow owner to get any user's details using their address\r\n    function getUserDetail(address _userAddress) public view onlyOwner returns(string memory, string memory){\r\n        User memory user = userDetails[_userAddress];\r\n        return (user.fname, user.lname);\r\n    }\r\n\r\n    // Marks a user's address as verified, only callable by the owner\r\n    function markAsVerified(address _userAddress) public onlyOwner{\r\n        if(userVerification[_userAddress] == true) revert BASICKYC_USERISVERIFIED();\r\n        userVerification[_userAddress] = true;\r\n        emit newAddressVerified(_userAddress);\r\n    }\r\n\r\n    // Checks if the caller's address is verified\r\n    function checkIfVerified() public view returns(bool){\r\n        return userVerification[msg.sender];\r\n    }\r\n\r\n    // Checks if a specific user's address is verified, only callable by the owner\r\n    function checkIfUserIsVerified(address _userAddress) public view returns(bool){\r\n        return userVerification[_userAddress];\r\n    }\r\n\r\n    // Allows the owner to remove verification from a user's address\r\n    function removeUserVerification(address _userAddress) public onlyOwner{\r\n        if (userVerification[_userAddress] == false) revert BASICKYC_USERISNOTVERIFIED();\r\n        userVerification[_userAddress] = false;\r\n    }\r\n\r\n    // Allows the owner to delete a user's data from the contract\r\n    function deleteUser(address _userAddress) public onlyOwner{\r\n        delete userDetails[_userAddress];\r\n        emit userDeleted(_userAddress);\r\n    }\r\n\r\n    // Allows a user to delete their own data from the contract\r\n    function deleteMyData() public{\r\n        delete userDetails[msg.sender];\r\n        emit userDeleted(msg.sender);\r\n    }\r\n\r\n    // Returns the address of the contract owner\r\n    function getOwner() public view returns (address){\r\n        return owner;\r\n    }\r\n}"
+      }
+    }
+  }
+}
