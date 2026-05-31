@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-394b29cf4f26b44067f6d03985aa99ca9a4e51d2",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.7.0"
+  },
+  "userSourceNameMap": {
+    "contracts/VotingSystem.sol": "project/contracts/VotingSystem.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/VotingSystem.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\nerror VOTINGSYSTEM_UNAUTHORIZEDACCESS();\r\nerror VOTINGSYSTEM_EXISTINGVOTER();\r\nerror VOTINGSYSTEM_VOTERALREADYVOTED();\r\nerror VOTINGSYSTEM_EXIXTINGPROPOSAL();\r\nerror VOTINGSYSTEM_NOEXISTINGPROPOSAL();\r\nerror VOTINGSYSTEM_NOTANEXISTINGVOTER();\r\n\r\ncontract VotingSystem{\r\n\r\n    address private owner;\r\n    uint256 public totalVoters; // Records the number of registered voters\r\n    uint256 public totalProposals; // Records the number of existing proposals\r\n\r\n    struct Voter{\r\n        string fname;\r\n        string lname;\r\n        bool hasVoted;\r\n        uint256 timestamp;\r\n    }\r\n\r\n    struct Proposal {\r\n        string title;\r\n        string description;\r\n        uint256 proposalId;\r\n        uint256 timestamp;\r\n    }\r\n\r\n    mapping(address => Voter) private voterData; // Links voter's address to their info\r\n    mapping(address => Proposal) private proposalData; // Links user's address to their voted proposal\r\n\r\n    event newRegistedVoter(string indexed fname, string lname, address userAddress);\r\n    event userHasVoted(address indexed userAddress);\r\n    event newProposalCreated(string indexed title, string description, uint256 proposalId);\r\n\r\n    constructor(){\r\n        owner = msg.sender;\r\n    }\r\n\r\n    modifier onlyOwner(){\r\n        if(msg.sender != owner) revert VOTINGSYSTEM_UNAUTHORIZEDACCESS();\r\n        _;\r\n    }\r\n\r\n    // Only the owner can create a proposal\r\n    function createAProposal(string memory _title, string memory _description, uint256 _proposalId) public onlyOwner{\r\n        if(bytes(proposalData[owner].title).length != 0) revert VOTINGSYSTEM_EXIXTINGPROPOSAL();\r\n        proposalData[owner] = Proposal(_title, _description, _proposalId, block.timestamp);\r\n        totalProposals++;\r\n        emit newProposalCreated(_title, _description, _proposalId);\r\n    }\r\n\r\n    // Checks if a user has voted by owner\r\n    function getVoterStatus(address _userAddress) public view  onlyOwner returns(bool){\r\n        return voterData[_userAddress].hasVoted;\r\n    }\r\n\r\n    // Stores voter's details\r\n    function register(string memory _fname, string memory _lname) public{\r\n        if(bytes(voterData[msg.sender].fname).length != 0) revert VOTINGSYSTEM_EXISTINGVOTER();\r\n        voterData[msg.sender] = Voter(_fname, _lname, false, block.timestamp);\r\n        totalVoters++;\r\n        emit newRegistedVoter(_fname, _lname, msg.sender);\r\n    }\r\n\r\n    // Retrieves the proposal details\r\n    function getProposalData(uint256 _proposalId) public view returns(string memory, string memory, uint256){\r\n        if(bytes(proposalData[owner].title).length == 0) revert VOTINGSYSTEM_NOEXISTINGPROPOSAL();\r\n        Proposal memory proposal = proposalData[owner];\r\n        return(proposal.title, proposal.description, _proposalId);\r\n    }\r\n\r\n    // Allows a registered voter to cast their vote on the proposal\r\n    function vote(string memory _title, string memory _description, uint256 _proposalId) public {\r\n        if(bytes(voterData[msg.sender].fname).length == 0) revert VOTINGSYSTEM_NOTANEXISTINGVOTER();\r\n        if(voterData[msg.sender].hasVoted == true) revert VOTINGSYSTEM_VOTERALREADYVOTED();\r\n        if(bytes(proposalData[owner].title).length == 0) revert VOTINGSYSTEM_NOEXISTINGPROPOSAL();\r\n        voterData[msg.sender].hasVoted = true;\r\n        proposalData[msg.sender] = Proposal(_title, _description, _proposalId, block.timestamp);\r\n        emit userHasVoted(msg.sender);\r\n    }\r\n\r\n    // Allows a voter to check if they have voted\r\n    function getMyStatus() public view returns(bool){\r\n        return voterData[msg.sender].hasVoted;\r\n    }\r\n\r\n    // gets the address of the contract owner\r\n    function getOwner() public view returns(address){\r\n        return owner;\r\n    }\r\n}"
+      }
+    }
+  }
+}
