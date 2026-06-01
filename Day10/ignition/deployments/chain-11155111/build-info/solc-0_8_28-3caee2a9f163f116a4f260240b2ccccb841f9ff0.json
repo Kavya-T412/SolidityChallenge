@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-3caee2a9f163f116a4f260240b2ccccb841f9ff0",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.7.0"
+  },
+  "userSourceNameMap": {
+    "contracts/OwnershipManager.sol": "project/contracts/OwnershipManager.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/OwnershipManager.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\nerror UNAUTHORIZED_ACCESS();\r\nerror INVALID_ADDRESS();\r\n\r\ncontract OwnershipManager{\r\n    address private owner;\r\n    struct Data{\r\n        string fname;\r\n        string lname;\r\n        uint256 timestamp;\r\n    }\r\n\r\n    mapping (address => Data) private ownerData;\r\n\r\n    event OwnershipTransferred(address indexed newOwnerAddress);\r\n    event OwnershipRenounced(address indexed addressZero);\r\n    event NewOwnerData(string indexed fname, string lname);\r\n\r\n    constructor(){\r\n        owner = msg.sender;\r\n    }\r\n\r\n    modifier onlyOwner(){\r\n        if(owner != msg.sender) revert UNAUTHORIZED_ACCESS();\r\n        _;\r\n    }\r\n\r\n    function transferOwnership(address _newOwnerAddress) public onlyOwner{\r\n        if(_newOwnerAddress == address(0)) revert INVALID_ADDRESS();\r\n        owner = _newOwnerAddress;\r\n        emit OwnershipTransferred(_newOwnerAddress);\r\n    }\r\n\r\n    function renounceOwnership() public onlyOwner{\r\n        owner = address(0);\r\n        emit OwnershipRenounced(address(0));\r\n    }\r\n\r\n    function changeOwnerData(string memory _fname, string memory _lname) public onlyOwner{\r\n        Data memory data = Data(_fname, _lname, block.timestamp);\r\n        ownerData[owner] = data;\r\n        emit NewOwnerData(_fname, _lname);\r\n    }\r\n\r\n    function getOwner() public view returns(address){\r\n        return owner;\r\n    }\r\n\r\n    function getOwnerData() public view returns(string memory, string memory, address, uint256){\r\n        Data memory data = ownerData[owner];\r\n        return(data.fname, data.lname, owner, data.timestamp);\r\n    }\r\n\r\n    function getContractSummary() public view returns(string memory, string memory, address){\r\n        Data memory data = ownerData[owner];\r\n        return(data.fname, data.lname, owner);\r\n    }\r\n}"
+      }
+    }
+  }
+}
