@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-45bc89dad8d69a980e5bdb4cffefb6c91572d4ea",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.7.0"
+  },
+  "userSourceNameMap": {
+    "contracts/IdeaStorage.sol": "project/contracts/IdeaStorage.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/IdeaStorage.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\nerror IDEASTORAGE_UNAUTHORIZEDACCESS();\r\nerror IDEASTORAGE_INVALIDINDEX();\r\n\r\ncontract IdeaStorage{\r\n\r\n    address private owner;\r\n    uint256 public totalIdea;\r\n\r\n    struct Idea{\r\n        string title;\r\n        string description;\r\n        uint256 timestamp;\r\n        bool isPublic;\r\n    }\r\n\r\n    mapping(address => Idea[]) private userIdeas;\r\n\r\n    event IdeaAdded(string indexed title, string description, address indexed userAddress);\r\n    event IdeaDeleted(uint256 indexed _indexNo, address indexed userAddress);\r\n\r\n    constructor(){\r\n        owner = msg.sender;\r\n    }\r\n\r\n    modifier onlyOwner(){\r\n        if(owner != msg.sender) revert IDEASTORAGE_UNAUTHORIZEDACCESS();\r\n        _;\r\n    }\r\n\r\n    // Stores user's ideas\r\n    function addIdea(string memory _title, string memory _description, bool _isPublic) public{\r\n        Idea memory idea = Idea(_title, _description, block.timestamp, _isPublic);\r\n        userIdeas[msg.sender].push(idea);\r\n        totalIdea++;\r\n        emit IdeaAdded(_title, _description, msg.sender);\r\n    }\r\n\r\n    // Retrives caller's ideas\r\n    function getMyIdea() public view returns(Idea[] memory){\r\n        return userIdeas[msg.sender];\r\n    } \r\n\r\n    // Gets all public ideas\r\n    function getUserPublicIdeas(address _userAddress) public view returns(Idea[] memory){\r\n        Idea[] memory ideas = userIdeas[_userAddress];\r\n        uint256 count; // stores the no.of.public ideas\r\n        for(uint256 i =0; i<ideas.length; i++){\r\n            if(ideas[i].isPublic){\r\n                count ++;\r\n            }\r\n        }\r\n\r\n        Idea[] memory result = new Idea[](count); // empty array with exactly the size of public ideas \r\n        uint256 index;\r\n        for(uint256 i=0; i<ideas.length; i++){\r\n            if(ideas[i].isPublic){\r\n                result[index] = ideas[i];\r\n                index ++;\r\n            }\r\n        }\r\n        return result;\r\n    }\r\n\r\n    // Deletes idea of caller's index number\r\n    function deleteIdea(uint256 _indexNo) public {\r\n        Idea[] storage idea = userIdeas[msg.sender];\r\n        if(_indexNo >= idea.length) revert IDEASTORAGE_INVALIDINDEX();\r\n        for(uint256 i= _indexNo; i<idea.length-1; i++){\r\n            idea[i] = idea[i+1];\r\n        }\r\n        idea.pop();\r\n        emit IdeaDeleted(_indexNo, msg.sender);\r\n    }\r\n\r\n    //Gets contract deployer's address\r\n    function getOwner() public view returns(address){\r\n        return owner;\r\n    }\r\n\r\n    // Returns user's idea count\r\n    function getMyIdeaCount() public view returns(uint256){\r\n        return userIdeas[msg.sender].length;\r\n    }\r\n\r\n    // Allow owner to delete user idea\r\n    function deleteUserIdea(address _userAddress, uint256 _indexNo) public onlyOwner{\r\n        Idea[] storage idea = userIdeas[_userAddress];\r\n        for(uint i=_indexNo; i<idea.length-1; i++){\r\n            idea[i] = idea[i+1];\r\n        }\r\n        idea.pop();\r\n    }\r\n\r\n    // Allow owner to see the user's idea count\r\n    function getUserIdeaCount(address _userAddress) public onlyOwner view returns(uint256){\r\n        return userIdeas[_userAddress].length;\r\n    }\r\n}"
+      }
+    }
+  }
+}
