@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-8a337c4bb2daffc880cd91a2f70a90b95f3045d6",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.8.0"
+  },
+  "userSourceNameMap": {
+    "contracts/ContactBook.sol": "project/contracts/ContactBook.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/ContactBook.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\nerror CONTACTBOOK_UNAUTHORIZEDACCESS();\r\nerror CONTACTBOOK_EXISTINGUSER();\r\nerror CONTACTBOOK_INVALIDINDEX();\r\n\r\ncontract ContactBook{\r\n    address private owner;\r\n    uint256 public totalContact;\r\n\r\n    struct Contact{\r\n        string fname;\r\n        string lname;\r\n        uint256 mobileNo;\r\n        string emailAddress;\r\n        uint256 timestamp;\r\n    }\r\n\r\n    mapping (address => Contact[]) private contactInfo;\r\n\r\n    event ContactAdded(string indexed fname, string lname, uint256 mobileNo, string emailAddress);\r\n    event ContactDeleted(address indexed userAddress, uint256 indexNo);\r\n\r\n    constructor(){\r\n        owner = msg.sender;\r\n    }\r\n\r\n    modifier onlyOwner(){\r\n        if(owner!=msg.sender) revert CONTACTBOOK_UNAUTHORIZEDACCESS();\r\n        _;\r\n    }\r\n\r\n    // Add contatct info\r\n    function addContact(string memory _fname, string memory _lname, uint256 _mobileNo, string memory _emailAddress) public{\r\n        Contact[] storage contact = contactInfo[msg.sender];\r\n        for(uint256 i=0; i<contact.length; i++){\r\n            if(contact[i].mobileNo == _mobileNo) revert CONTACTBOOK_EXISTINGUSER();\r\n        }\r\n\r\n        Contact memory newContact = Contact(_fname, _lname, _mobileNo, _emailAddress, block.timestamp);\r\n        contact.push(newContact);\r\n        emit ContactAdded(_fname, _lname, _mobileNo, _emailAddress);\r\n        totalContact++;\r\n    }\r\n\r\n    // Get contacts of user\r\n    function getMyContact() public view returns(Contact[] memory){\r\n        Contact[] memory contact = contactInfo[msg.sender];\r\n        return contact;\r\n    }\r\n\r\n    // Gets user's contact counts\r\n    function getMyContactCount() public view returns(uint256){\r\n        return contactInfo[msg.sender].length;\r\n    }\r\n\r\n    // Delete contact by index\r\n    function deleteContact(uint256 _contactIndex) public{\r\n        Contact[] storage contact = contactInfo[msg.sender];\r\n        if(_contactIndex >= contact.length) revert CONTACTBOOK_INVALIDINDEX();\r\n        for (uint256 i= _contactIndex; i<contact.length-1;i++){\r\n            contact[i] = contact[i+1];\r\n        }\r\n        contact.pop();\r\n        emit ContactDeleted(msg.sender, _contactIndex);\r\n    }\r\n\r\n    // Get contract owner\r\n    function getOwner() public view returns(address){\r\n        return owner;\r\n    }\r\n\r\n    // Delete contact of any user by owner\r\n    function deleteUserContact(address _userAddress, uint256 _contactIndex) public onlyOwner{\r\n        Contact[] storage contact = contactInfo[_userAddress];\r\n        if(_contactIndex>=contact.length) revert CONTACTBOOK_INVALIDINDEX();\r\n        for(uint256 i = _contactIndex; i<contact.length-1; i++){\r\n            contact[i] = contact[i+1];\r\n        }\r\n        contact.pop();\r\n    }\r\n\r\n    // Get any user's contact by owner\r\n    function getUserContacts(address _userAddress) public onlyOwner view returns(Contact[] memory){\r\n        return contactInfo[_userAddress];\r\n    }\r\n}"
+      }
+    }
+  }
+}
