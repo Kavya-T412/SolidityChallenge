@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-027913431243a33841c284f9fc749906085b8cd9",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.8.0"
+  },
+  "userSourceNameMap": {
+    "contracts/NFTVault.sol": "project/contracts/NFTVault.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/NFTVault.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\nerror NFTVAULT_UNAUTHORIZEDACCESS();\r\nerror NFTVAULT_EXISTING_NFT();\r\nerror NFTVAULT_INVALIDINDEX();\r\n\r\ncontract NFTVault{\r\n    address immutable i_owner;\r\n    uint256 public totalNFTs;\r\n    uint256 public totalUpdatedNFTs;\r\n\r\n    struct NFT{\r\n        string name;\r\n        string description;\r\n        string imgUrl;\r\n        uint256 nftId;\r\n        address contractAddress;\r\n        uint256 timestamp;\r\n    }\r\n\r\n    mapping(address => NFT[]) internal nftsInfo;\r\n\r\n    event NftStored(string indexed name, uint256 indexed nftId, address indexed contractAddress, address userAddress);\r\n    event NftUpdated(uint256 nftIndexed, string indexed name, uint256 indexed nftId, address indexed contractAddress);\r\n    event NftDeleted(uint256 indexed nftIndex, address indexed userAddress);\r\n\r\n    constructor(){\r\n        i_owner = msg.sender;\r\n    }\r\n\r\n    modifier onlyOwner(){\r\n        if(i_owner != msg.sender) revert NFTVAULT_UNAUTHORIZEDACCESS();\r\n        _;\r\n    }\r\n\r\n    // Store Nft info\r\n    function storeNFT(string memory _name, string memory _description, string memory _imgUrl, uint256 _nftId, address _contractAddress) public {\r\n        NFT[] storage nft = nftsInfo[msg.sender];\r\n        for(uint256 i = 0; i < nft.length; i++){\r\n            if(nft[i].nftId == _nftId && nft[i].contractAddress == _contractAddress){\r\n                revert NFTVAULT_EXISTING_NFT();\r\n            }\r\n        }\r\n        NFT memory newNft = NFT(_name, _description, _imgUrl, _nftId, _contractAddress, block.timestamp);\r\n        nftsInfo[msg.sender].push(newNft);\r\n        emit NftStored(_name, _nftId, _contractAddress, msg.sender);\r\n        totalNFTs++;\r\n    }\r\n\r\n    // Gets Nft info\r\n    function getMyNFTs() public view returns(NFT[] memory){\r\n        return nftsInfo[msg.sender];\r\n    }\r\n\r\n    // Gets Nft info at index\r\n    function getMyNFTAtIndex(uint256 _nftIndex) public view returns(NFT memory){\r\n        NFT[] memory nft = nftsInfo[msg.sender];\r\n        if(_nftIndex >= nft.length) revert NFTVAULT_INVALIDINDEX();\r\n        return nftsInfo[msg.sender][_nftIndex];\r\n    }\r\n\r\n    // Update Nft info at index\r\n    function updateNFT(uint256 _nftIndex, string memory _name, string memory _description, string memory _imgUrl, uint256 _nftId, address _contractAddress) public{\r\n        NFT[] storage nft = nftsInfo[msg.sender];\r\n        for(uint256 i=0; i<nft.length; i++){\r\n            if(nft[i].nftId == _nftId) revert NFTVAULT_EXISTING_NFT();\r\n        }\r\n        NFT memory updateNft = NFT(_name, _description, _imgUrl, _nftId, _contractAddress, block.timestamp);\r\n        nft[_nftIndex] = updateNft;\r\n        emit NftUpdated(_nftIndex, _name, _nftId, _contractAddress);\r\n        totalUpdatedNFTs++;\r\n    }\r\n\r\n    // Delete Nft info at index\r\n    function deleteNft(uint256 _nftIndex) public{\r\n        NFT[] storage nft = nftsInfo[msg.sender];\r\n        if(_nftIndex >= nft.length) revert NFTVAULT_INVALIDINDEX();\r\n        for(uint256 i = _nftIndex; i< nft.length-1; i++){\r\n            nft[i] = nft[i+1];\r\n        }\r\n        nft.pop();\r\n        emit NftDeleted(_nftIndex, msg.sender);\r\n    }\r\n\r\n    // Get total Nfts stored by user\r\n    function getMyTotalNfts() public view returns (uint256) {\r\n        return nftsInfo[msg.sender].length;\r\n    }\r\n\r\n    // Retrives owner address\r\n    function getOwner() public view returns (address) {\r\n        return i_owner;\r\n    }\r\n\r\n    // Retrives Nft info of a user by owner\r\n    function getUserNFTs(address _userAddress) public onlyOwner view returns(NFT[] memory) {\r\n        return nftsInfo[_userAddress];\r\n    }\r\n\r\n    // Retrives Nft info at index of a user by owner\r\n    function getUserNFTAtIndex(address _userAddress, uint256 _nftIndex) public onlyOwner view returns(NFT memory){\r\n        NFT[] memory nft = nftsInfo[_userAddress];\r\n        if(_nftIndex >= nft.length) revert NFTVAULT_INVALIDINDEX();\r\n        return nftsInfo[_userAddress][_nftIndex];\r\n    }\r\n\r\n    // Get total Nfts stored by user by owner\r\n    function getUserTotalNfts(address _userAddress) public onlyOwner view returns (uint256) {\r\n        return nftsInfo[_userAddress].length;\r\n    }\r\n\r\n    // Delete Nft info at index of a user by owner\r\n    function deleteUserNFT(address _userAddress, uint256 _nftIndex) public onlyOwner {\r\n        NFT[] storage nft = nftsInfo[_userAddress];\r\n        if (_nftIndex >= nft.length) revert NFTVAULT_INVALIDINDEX();\r\n        for(uint256 i = _nftIndex; i < nft.length - 1; i++) {\r\n            nft[i] = nft[i + 1];\r\n        }\r\n        nft.pop(); // Removes the last duplicate element after shifting\r\n        emit NftDeleted(_nftIndex, _userAddress);\r\n    }\r\n}"
+      }
+    }
+  }
+}
