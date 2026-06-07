@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-f7f9cce04966ec705c322b82d2d1b323e03b5269",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.8.0"
+  },
+  "userSourceNameMap": {
+    "contracts/ReferralSystem.sol": "project/contracts/ReferralSystem.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/ReferralSystem.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\nerror UNAUTHORIZED_ACCESS();\r\nerror EXISTSING_USER();\r\nerror SELF_REFERRAL_FAILED();\r\nerror INVALID_REFERRAL_ADDRESS();\r\nerror INVALID_ETH_AMOUNT();\r\nerror PAYMENT_FAILED();\r\nerror ALREADY_REFFERRED();\r\n\r\ncontract ReferralSystem{\r\n\r\n    address immutable i_owner;\r\n    uint256 public totalRegisteredUser;\r\n    uint256 public totalReferralCount;\r\n\r\n    struct User{\r\n        string fname;\r\n        string lname;\r\n        string emailAddress;\r\n        uint256 timestamp;\r\n    }\r\n\r\n    mapping(address=>User) internal userData;\r\n    mapping(address=>address[]) private userReferrals;\r\n    mapping(address=>address) private referredBy;\r\n    mapping(address=>bool) public isRegistered;\r\n\r\n    event RegisteredUser(string fname, string lname, address indexed userAddress);\r\n    event ReferralAdded(address indexed referrerAddress, address indexed userAddress);\r\n    event UpdatedData(address indexed userAddress, string fname, string lname);\r\n    event UserFunded(address indexed userAddress, uint256 indexed ethAmount);\r\n    event ReceivedETH(address indexed senderAddress, uint256 indexed ethAmount);\r\n\r\n    constructor(){\r\n        i_owner = msg.sender;\r\n    }\r\n\r\n    modifier onlyOwner(){\r\n        if(i_owner != msg.sender) revert UNAUTHORIZED_ACCESS();\r\n        _;\r\n    }\r\n\r\n    // Registers a new user in the system\r\n    function register(string memory _fname, string memory _lname, string memory _emailAddress) public{\r\n        if(bytes(userData[msg.sender].emailAddress).length >0) revert EXISTSING_USER();\r\n        User memory newUser = User(_fname, _lname, _emailAddress, block.timestamp);\r\n        userData[msg.sender] = newUser;\r\n        isRegistered[msg.sender] = true;\r\n        totalRegisteredUser++;\r\n        emit RegisteredUser(_fname, _lname, msg.sender);\r\n    }\r\n\r\n    // Allows users to update their personal information\r\n    function updateMyData(string memory _fname, string memory _lname, string memory _emailAddress) public{\r\n        User memory userNewData = User(_fname, _lname, _emailAddress, block.timestamp);\r\n        userData[msg.sender] = userNewData;\r\n        emit UpdatedData(msg.sender, _fname, _lname);\r\n    }\r\n\r\n    // Allows users to provide a referrer address \r\n    function referralAddressOptional(address _referrerAddress) public{\r\n        if(_referrerAddress == msg.sender) revert SELF_REFERRAL_FAILED();\r\n        if(_referrerAddress == address(0)) revert INVALID_REFERRAL_ADDRESS();\r\n        if(referredBy[msg.sender] != address(0)) revert ALREADY_REFFERRED();\r\n        referredBy[msg.sender] = _referrerAddress;\r\n        userReferrals[_referrerAddress].push(msg.sender);\r\n        totalReferralCount++;\r\n        emit ReferralAdded(_referrerAddress, msg.sender);\r\n    }\r\n\r\n    // Returns user's data\r\n    function getMyData() public view returns(User memory){\r\n        return userData[msg.sender];\r\n    }\r\n\r\n    // Returns the referrer address of the caller\r\n    function getReferrer() public view returns(address){\r\n        return referredBy[msg.sender];\r\n    }\r\n\r\n    // Returns the list of referrals for the caller\r\n    function getMyReferrals() public view returns(address[] memory){\r\n        return userReferrals[msg.sender];\r\n    }\r\n\r\n    // Returns the total number of referrals for the caller\r\n    function getMyTotalReferrals() public view returns(uint256){\r\n        return userReferrals[msg.sender].length;\r\n    }\r\n\r\n    // Returns the owner of the contract\r\n    function getOwner() public view returns(address){\r\n        return i_owner;\r\n    }\r\n\r\n    // Allows the owner to fund a user's address with Ether\r\n    function fundUser(address _userAddress) payable external onlyOwner{\r\n        if(msg.value <= 0) revert INVALID_ETH_AMOUNT();\r\n        (bool success, ) = payable(_userAddress).call{value: msg.value}(\"\");\r\n        if(!success) revert PAYMENT_FAILED();\r\n        emit UserFunded(_userAddress, msg.value);\r\n    }\r\n\r\n    // Returns array of user's referrals\r\n    function getUserReferrals(address _userAddress) public view onlyOwner returns(address[] memory){\r\n        return userReferrals[_userAddress];\r\n    }\r\n\r\n    // Returns the data of a specific user\r\n    function getUserData(address _userAddress) public view onlyOwner returns(User memory){\r\n        return userData[_userAddress];\r\n    }\r\n\r\n    // Only owner can get all referral status of the system\r\n    function getAllReferralStatus() public view onlyOwner returns(uint256 totalUser, uint256 totalReferrals){\r\n        return (totalRegisteredUser, totalReferralCount);\r\n    }\r\n\r\n    // Receives ETH with no calldata\r\n    receive() external payable {\r\n        emit ReceivedETH(msg.sender, msg.value);\r\n    }\r\n\r\n    // Handles ETH sent with calldata\r\n    fallback() external payable{\r\n        emit ReceivedETH(msg.sender, msg.value);\r\n    }\r\n\r\n}"
+      }
+    }
+  }
+}
