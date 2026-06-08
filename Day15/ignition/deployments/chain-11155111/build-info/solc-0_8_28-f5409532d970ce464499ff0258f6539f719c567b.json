@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-f5409532d970ce464499ff0258f6539f719c567b",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.8.0"
+  },
+  "userSourceNameMap": {
+    "contracts/WalletGuard.sol": "project/contracts/WalletGuard.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/WalletGuard.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\nerror WALLETGUARD_UNAUTHORIZED_ACCESS();\r\nerror WALLETGUARD_INVALID_ADDRESS();\r\nerror WALLETGUARD_ALREADY_REGISTERED();\r\nerror WALLETGUARD_ACCESS_DENIED();\r\nerror WALLETGUARD_PAUSED_CONTRACT();\r\nerror WALLETGUARD_INVALID_INDEX();\r\nerror WALLETGUARD_INVALID_ETH_AMOUNT();\r\nerror WALLETGUARD_TRANSFER_FAILED();\r\nerror WALLETGUARD_ALREADY_WHITELISTED();\r\n\r\ncontract WalletGuard {\r\n    address immutable owner;\r\n    uint256 public addressCount;\r\n    uint256 public safeAddressCount;\r\n    bool isPaused;\r\n\r\n    struct User{\r\n        string fname;\r\n        string lname;\r\n        address userAddress;\r\n        uint256 timestamp;\r\n    }\r\n\r\n    mapping(address => User) internal userData;\r\n    mapping(address => address[]) internal whitelistedAddress;\r\n\r\n    event Registered(string indexed fname, string indexed lname, address indexed userAddress);\r\n    event NewWhitelistedAddress(address indexed userAddress, address indexed safeAddress);\r\n    event SuspiciousETHReceived(address indexed senderAddress, uint256 indexed ethAmount);\r\n    event sentETH(address indexed userAddress, uint256 ethAmount);\r\n    event ActiveContract();\r\n    event InActiveContract();\r\n\r\n    constructor() {\r\n        owner = msg.sender;\r\n    }\r\n\r\n    modifier onlyOwner(){\r\n        if(owner != msg.sender) revert WALLETGUARD_UNAUTHORIZED_ACCESS();\r\n        _;\r\n    }\r\n\r\n    modifier isActive(){\r\n        if(!isPaused) revert WALLETGUARD_PAUSED_CONTRACT();\r\n        _;\r\n    }\r\n\r\n    function register(string memory _fname, string memory _lname, address _userAddress) public isActive {\r\n        if(bytes(userData[msg.sender].fname).length > 0) revert WALLETGUARD_ALREADY_REGISTERED();\r\n        if(_userAddress == address(0)) revert WALLETGUARD_INVALID_ADDRESS();\r\n        User memory user = User(_fname, _lname, _userAddress, block.timestamp);\r\n        userData[msg.sender] = user;\r\n        addressCount++;\r\n        emit Registered(_fname, _lname, _userAddress);\r\n    }\r\n\r\n    function whitelistAddress(address _safeAddress) public isActive {\r\n        if(_safeAddress == address(0) || _safeAddress == msg.sender) revert WALLETGUARD_INVALID_ADDRESS();\r\n        address[] storage list = whitelistedAddress[msg.sender];\r\n        for(uint256 i=0; i<list.length; i++){\r\n            if(list[i] == _safeAddress) revert WALLETGUARD_ALREADY_WHITELISTED();\r\n        }\r\n        list.push(_safeAddress);\r\n        safeAddressCount++;\r\n        emit NewWhitelistedAddress(msg.sender, _safeAddress);\r\n    }\r\n\r\n    function getMyWhitelistedAddress() public view isActive returns(address[] memory){\r\n        return whitelistedAddress[msg.sender];\r\n    }\r\n\r\n    function updateWhitelistedAddress(uint256 _index, address _newSafeAddress) public isActive{\r\n        if(_newSafeAddress == address(0) || _newSafeAddress == msg.sender) revert WALLETGUARD_INVALID_ADDRESS();\r\n        if(_index >= whitelistedAddress[msg.sender].length) revert WALLETGUARD_INVALID_INDEX();\r\n        whitelistedAddress[msg.sender][_index] = _newSafeAddress;\r\n    }\r\n\r\n    function sendETHToWhitelisted(address _userAddress) payable public onlyOwner isActive{\r\n        address[] memory userWhitelist = whitelistedAddress[msg.sender];\r\n        bool isSafe = false;\r\n        for(uint256 i=0; i<userWhitelist.length; i++){\r\n            if(userWhitelist[i] == _userAddress){\r\n                isSafe = true;\r\n                break;\r\n            }\r\n        }\r\n        if(!isSafe){\r\n            emit SuspiciousETHReceived(msg.sender, msg.value);\r\n            revert WALLETGUARD_ACCESS_DENIED();\r\n        }\r\n\r\n        if(msg.value == 0) revert WALLETGUARD_INVALID_ETH_AMOUNT();\r\n        (bool success, ) = payable(_userAddress).call{value:msg.value}(\"\");\r\n        if(!success) revert WALLETGUARD_TRANSFER_FAILED();\r\n        emit sentETH(_userAddress, msg.value);\r\n    }\r\n\r\n    function getOwner() public view returns (address){\r\n        return owner;\r\n    }\r\n\r\n    function activateContract() external onlyOwner{\r\n        isPaused = true;\r\n        emit ActiveContract();\r\n    }\r\n\r\n    function deactivateContract() external onlyOwner{\r\n        isPaused = false;\r\n        emit InActiveContract();\r\n    }\r\n\r\n    receive() payable external{\r\n        emit SuspiciousETHReceived(msg.sender, msg.value);\r\n    }\r\n\r\n    fallback() payable external{\r\n        emit SuspiciousETHReceived(msg.sender, msg.value);\r\n    }\r\n}"
+      }
+    }
+  }
+}
