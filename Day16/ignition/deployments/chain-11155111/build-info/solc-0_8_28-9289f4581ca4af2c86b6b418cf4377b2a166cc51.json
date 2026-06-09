@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-9289f4581ca4af2c86b6b418cf4377b2a166cc51",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.9.0"
+  },
+  "userSourceNameMap": {
+    "contracts/DecentralizedPoll.sol": "project/contracts/DecentralizedPoll.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/DecentralizedPoll.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.28;\r\n\r\nerror DECENTRALIZEDPOLL_UNAUTHORIZED_ACCESS();\r\nerror DECENTRALIZEDPOLL_MINIMUM_OF_TWO_OPTIONS_REQUIRED();\r\nerror DECENTRALIZEDPOLL_INACTIVE_CONTRACT();\r\nerror DECENTRALIZEDPOLL_ACCESS_DENIED();\r\nerror DECENTRALIZEDPOLL_NOT_AN_EXISTING_POLL();\r\nerror DECENTRALIZEDPOLL_NOT_USER_EXISTING_POLL();\r\nerror DECENTRALIZEDPOLL_POLL_IS_ACTIVE();\r\nerror DECENTRAILZEDPOLL_POLL_ALREADY_ENDED();\r\nerror DECENTRALIZEDPOLL_USER_HAS_VOTED();\r\nerror DECENTRALIZEDPOLL_INACTIVE_POLL();\r\nerror DECENTRALIZEDPOLL_INVALID_OPTION_INDEX();\r\nerror DECENTRALIZEDPOLL_NO_EXISTING_POLL();\r\n\r\ncontract DecentralizedPoll{\r\n\r\n    address immutable i_owner;\r\n    bool private active;\r\n    uint256 public pollCount;\r\n    uint256[] private pollIds;\r\n\r\n    enum PollStatus{Created, Active, Ended}\r\n\r\n    struct PollData{\r\n        uint256 pollId;\r\n        string title;\r\n        string description;\r\n        string[] options;\r\n        uint256[] votes;\r\n        PollStatus status;\r\n        uint256 createdAt;\r\n    }\r\n\r\n    mapping(uint256 => PollData) public polls;\r\n    mapping(uint256 => address) private pollCreator;\r\n    mapping(uint256 => mapping(address => bool)) public hasVoted;\r\n    mapping(address => PollData[]) private creatorPolls;\r\n\r\n    event PollCreated(address indexed creatorAddress, string pollTitle, string pollDescription);\r\n    event UpdatedPoll(address indexed userAddress, uint256 pollId, string newPollTitle, string newPollDescription);\r\n    event PollDeleted(address indexed userAddress, uint256 pollId);\r\n    event Voted(address indexed voterAddress, uint256 indexed pollId, uint256 indexed optionIndex);\r\n    event PollActivated(uint256 indexed pollId);\r\n    event PollDeactivated(uint256 indexed pollId);\r\n    event ContractActivated();\r\n    event ContractDeactivated();\r\n\r\n    constructor(){\r\n        i_owner = msg.sender;\r\n    }\r\n\r\n    modifier onlyOwner{\r\n        if(msg.sender != i_owner) revert DECENTRALIZEDPOLL_UNAUTHORIZED_ACCESS();\r\n        _;\r\n    }\r\n\r\n    modifier isActive(){\r\n        if(!active) revert DECENTRALIZEDPOLL_INACTIVE_CONTRACT();\r\n        _;\r\n    }\r\n\r\n    modifier validPoll(uint256 _pollId){\r\n        if(polls[_pollId].pollId != _pollId) revert DECENTRALIZEDPOLL_NOT_AN_EXISTING_POLL();\r\n        _;\r\n    }\r\n\r\n    function createPoll(string memory _title, string memory _description, string[] memory _options) public isActive{\r\n        if(_options.length<2) revert DECENTRALIZEDPOLL_MINIMUM_OF_TWO_OPTIONS_REQUIRED();\r\n        pollCount++;\r\n        uint256 _pollId = pollCount;\r\n        \r\n        PollData storage data = polls[_pollId];\r\n        data.pollId = _pollId;\r\n        data.title = _title;\r\n        data.description = _description;\r\n        data.options = _options;\r\n        data.votes = new uint256[](_options.length);\r\n        data.status = PollStatus.Created;\r\n        data.createdAt = block.timestamp;\r\n       \r\n        creatorPolls[msg.sender].push(data);\r\n        pollCreator[_pollId] = msg.sender;\r\n        pollIds.push(_pollId);\r\n       \r\n        emit PollCreated(msg.sender, _title, _description);\r\n    }\r\n\r\n    function updatePoll(uint256 _pollId, string memory _newTitle, string memory _newDescription, string[] memory _newOptions) public isActive{\r\n        if(_newOptions.length < 2) revert DECENTRALIZEDPOLL_MINIMUM_OF_TWO_OPTIONS_REQUIRED();\r\n        if(pollCreator[_pollId] != msg.sender) revert DECENTRALIZEDPOLL_ACCESS_DENIED();\r\n        \r\n        PollData storage data = polls[_pollId];\r\n        data.pollId = _pollId;\r\n        data.title = _newTitle;\r\n        data.description = _newDescription; \r\n        data.options = _newOptions;\r\n        data.votes = new uint256[](_newOptions.length);\r\n        data.status = PollStatus.Created;\r\n        data.createdAt = block.timestamp;\r\n\r\n        emit UpdatedPoll(msg.sender, _pollId, _newTitle, _newDescription);\r\n    }\r\n\r\n    function deletePoll(uint256 _pollId) public isActive{\r\n        if(pollCreator[_pollId] != msg.sender) revert DECENTRALIZEDPOLL_ACCESS_DENIED();\r\n        delete polls[_pollId];\r\n        unchecked{\r\n            pollCount--;\r\n        }\r\n        for(uint256 i=0; i<pollIds.length; i++){\r\n            if(pollIds[i] == _pollId){\r\n                pollIds[i] = pollIds[pollIds.length-1];\r\n                break;\r\n            }\r\n        }\r\n        pollIds.pop();\r\n        emit PollDeleted(msg.sender, _pollId);\r\n    }\r\n\r\n    function vote(uint256 _pollId, uint256 _optionIndex) public isActive validPoll(_pollId){\r\n        PollData storage data = polls[_pollId];\r\n        if(data.status != PollStatus.Active) revert DECENTRALIZEDPOLL_INACTIVE_POLL();\r\n        if(hasVoted[_pollId][msg.sender] == true) revert DECENTRALIZEDPOLL_USER_HAS_VOTED();\r\n        if(_optionIndex >= data.options.length) revert DECENTRALIZEDPOLL_INVALID_OPTION_INDEX();\r\n        \r\n        data.votes[_optionIndex]++;\r\n        hasVoted[_pollId][msg.sender] = true;\r\n        \r\n        emit Voted(msg.sender, _pollId, _optionIndex);\r\n    }\r\n\r\n    function getPollOptions(uint256 _pollId) public validPoll(_pollId) view returns(string[] memory){\r\n        return polls[_pollId].options;\r\n    }\r\n\r\n    function getMyPolls() public view returns(PollData[] memory){\r\n        return creatorPolls[msg.sender];\r\n    }\r\n\r\n    function getAllPolls() public view returns(uint256[] memory){\r\n        return pollIds;\r\n    }\r\n\r\n    function getPollResults(uint256 _pollId) public validPoll(_pollId) view returns(uint256[] memory){\r\n        return polls[_pollId].votes;\r\n    }\r\n\r\n    function getPollCreator(uint256 _pollId) public view returns(address){\r\n        return pollCreator[_pollId];\r\n    }\r\n\r\n    function getOwner() public view returns(address){\r\n        return i_owner;\r\n    }\r\n\r\n    function activatePoll(uint256 _pollId) external isActive validPoll(_pollId){\r\n        if(pollCreator[_pollId] != msg.sender) revert DECENTRALIZEDPOLL_ACCESS_DENIED();\r\n\r\n        PollData storage existingPoll = polls[_pollId];\r\n        if(existingPoll.status == PollStatus.Active) revert DECENTRALIZEDPOLL_POLL_IS_ACTIVE();\r\n        existingPoll.status = PollStatus.Active;\r\n        \r\n        emit PollActivated(_pollId);\r\n    }\r\n\r\n    function deactivatePoll(uint256 _pollId) external isActive validPoll(_pollId){\r\n        if(pollCreator[_pollId] != msg.sender) revert DECENTRALIZEDPOLL_ACCESS_DENIED();\r\n\r\n        PollData storage existingPoll = polls[_pollId];\r\n        if(existingPoll.status == PollStatus.Ended) revert DECENTRAILZEDPOLL_POLL_ALREADY_ENDED();\r\n        existingPoll.status = PollStatus.Ended;\r\n        \r\n        emit PollDeactivated(_pollId);\r\n    }\r\n\r\n    function deletePoll(address _creatorAddress, uint256 _pollId) external onlyOwner isActive{\r\n        if(pollCreator[_pollId] != _creatorAddress) revert DECENTRALIZEDPOLL_NOT_USER_EXISTING_POLL();\r\n        delete polls[_pollId];\r\n\r\n        unchecked{\r\n            pollCount--;\r\n        }\r\n\r\n        for(uint i=0; i<pollIds.length; i++){\r\n            if(pollIds[i] == _pollId){\r\n                pollIds[i] = pollIds[pollIds.length-1];\r\n                break;\r\n            }\r\n        }\r\n        pollIds.pop();\r\n        emit PollDeleted(_creatorAddress, _pollId);\r\n    }\r\n\r\n    function getCreatorPolls(address _creatorAddress) external onlyOwner isActive view returns(PollData[] memory){\r\n        return creatorPolls[_creatorAddress];\r\n    }\r\n\r\n    function activateContract() external onlyOwner{\r\n        active = true;\r\n        emit ContractActivated();\r\n    }\r\n\r\n    function deactivateContract() external onlyOwner{\r\n        active = false;\r\n        emit ContractDeactivated();\r\n    }\r\n\r\n\r\n}"
+      }
+    }
+  }
+}
