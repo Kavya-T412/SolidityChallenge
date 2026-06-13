@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-c1f28f768cb9130432f938a2e7dc82c24c73ffe1",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.9.0"
+  },
+  "userSourceNameMap": {
+    "contracts/OptimizedGasSaver.sol": "project/contracts/OptimizedGasSaver.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/OptimizedGasSaver.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.18;\r\n\r\nerror OPTIMIZEDGASSAVER_UNAUTHORIZED_ACCESS();\r\nerror OPTIMIZEDGASSAVER_ALREADY_REGISTERED();\r\nerror OPTIMIZEDGASSAVER_NOT_A_REGISTERED_USER();\r\n\r\n/*  `error` is used instead of `require` to save gas by reverting the transaction with custom error messages when certain conditions are not met. \r\n    Custom errors are more gas efficient than string error messages in `require` statements.\r\n*/\r\n\r\ncontract OptimizedGasSaver {\r\n\r\n    address immutable i_owner;\r\n    \r\n    /* Insted of using multiple string variable to store user data, `struct` is used to reduce gas costs \r\n       Allows to store the data using single function\r\n       Ensures that data is organized and secured in a single variable\r\n    */\r\n\r\n    // Groups user data\r\n    struct Data{\r\n        bytes16 fName;\r\n        bytes16 mName;\r\n        bytes16 lName;\r\n        uint8 age;\r\n    }\r\n\r\n    mapping(address => Data) internal userData; // maps user's address to their data\r\n    mapping(address => bool) internal registeredUser; // maps user's address to their registration status\r\n\r\n    event Registered(address indexed userAddress, bytes16 fName, bytes16 lName); // Emits registered\r\n    event Updated(address indexed userAddress, bytes16 newFName, bytes16 newLName); // Emits updated\r\n    event Deleted(address indexed userAddress); // Emits deleted\r\n\r\n    // Sets contract deployer as owner of the contract\r\n    constructor(){\r\n        i_owner = msg.sender;\r\n    }\r\n\r\n    // Restricts access to only owner of the contract\r\n    modifier onlyOwner() {\r\n        if(msg.sender != i_owner) revert OPTIMIZEDGASSAVER_UNAUTHORIZED_ACCESS();\r\n        _;\r\n    }\r\n\r\n    // Allows user to register\r\n    function register(bytes16 _fName, bytes16 _mName, bytes16 _lName, uint8 _age) external {\r\n        if(registeredUser[msg.sender] == true) revert OPTIMIZEDGASSAVER_ALREADY_REGISTERED();\r\n\r\n        Data memory data = Data(_fName, _mName, _lName, _age);\r\n        userData[msg.sender] = data;\r\n        registeredUser[msg.sender] = true;\r\n\r\n        emit Registered(msg.sender, _fName, _lName);\r\n    }\r\n\r\n    // Allows users to update their data\r\n    function update(bytes16 _newFName, bytes16 _newMName, bytes16 _newLName, uint8 _newAge) external {\r\n        if(registeredUser[msg.sender] == false) revert OPTIMIZEDGASSAVER_NOT_A_REGISTERED_USER();\r\n\r\n        Data storage data = userData[msg.sender];\r\n        data.fName = _newFName;\r\n        data.mName = _newMName;\r\n        data.lName = _newLName;\r\n        data.age = _newAge;\r\n\r\n        emit Updated(msg.sender, _newFName, _newLName);\r\n    }\r\n\r\n    // Deletes user data\r\n    function deleteMyData() external {\r\n        delete userData[msg.sender];\r\n        registeredUser[msg.sender] = false;\r\n\r\n        emit Deleted(msg.sender);\r\n    } \r\n\r\n    // Returns user's data\r\n    function getMyData() external view returns (Data memory){\r\n        return userData[msg.sender];\r\n    }\r\n\r\n    // Returns contract owner\r\n    function getOwner() external view returns (address) {\r\n        return i_owner;\r\n    }\r\n\r\n    // Returns user's data, accessed only by contract owner\r\n    function getUserData (address _userAddress) external view onlyOwner returns(Data memory){\r\n        return userData[_userAddress];\r\n    }\r\n}\r\n\r\n\r\n\r\n\r\n\r\n/* Basic storage of user data in blockchain using smart contract which is not optimized for gas usage.\r\n\r\ncontract unOptimized{\r\n\r\n    string public fName;\r\n    string public lName;\r\n    uint256 public age;\r\n\r\n    function register(string memory _fName, string memory _lName, uint256 _age) external {\r\n        require(bytes(fName).length == 0 && bytes(lName).length == 0, \"User already registered\");\r\n        fName = _fName;\r\n        lName = _lName;\r\n        age = _age;\r\n    }\r\n\r\n    function update(string memory _newFName, string memory _newLName, uint256 _newAge) external {\r\n        require(bytes(fName).length != 0 && bytes(lName).length != 0, \"User not registered\");\r\n        fName = _newFName;\r\n        lName = _newLName;\r\n        age = _newAge;\r\n    }\r\n\r\n}\r\n\r\n*/"
+      }
+    }
+  }
+}
