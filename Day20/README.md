@@ -1,57 +1,73 @@
-# Sample Hardhat 3 Project (`mocha` and `ethers`)
+# Day 20 - Simple Auction
 
-This project showcases a Hardhat 3 project using `mocha` for tests and the `ethers` library for Ethereum interactions.
+## Overview
+Simple Auction is a modular, multi-contract decentralized auction system built in Solidity. It allows sellers to list items with specific descriptions and quantities, handles active bidding with escrow logic, processes highest-bid tracking, outbid refund withdrawals, and enables winners to claim items once the auction period ends.
 
-To learn more about Hardhat 3, please visit the [Getting Started guide](https://hardhat.org/docs/getting-started#getting-started-with-hardhat-3). To share your feedback, join our [Hardhat 3](https://hardhat.org/hardhat3-telegram-group) Telegram group or [open an issue](https://github.com/NomicFoundation/hardhat/issues/new) in our GitHub issue tracker.
+## Smart Contract Purpose
+The project provides an on-chain auction coordinator that manages bids, escrow accounts, item lists, and states. Sellers list items for sale, bidders lock ETH to compete, outbid users withdraw their funds safely, and the winning bidder claims the items.
 
-## Project Overview
+## Features
+- **Item Listing & Management**: Sellers can register items, update descriptions or reserves, and delete items.
+- **Auction Lifecycles**: Supports state transitions: `NotActive` (listed), `Active` (accepting bids), `Ended` (finished/claiming), and `Cancelled`.
+- **Escrow-based Bidding**: Validates incoming bids, updates the highest bidder, and safely retains bidder funds in contract escrow.
+- **Secure Pull-Over-Push Withdrawals**: Enables outbid users to manually withdraw their funds, preventing reentrancy and DOS attacks.
+- **Winner Claiming**: Permits the winning bidder to claim ownership of the auctioned item on-chain once the time limit is reached.
+- **Auctioneer Controls**: Allows administrative pauses, ownership transfers, and contract withdrawal of accrued platform fees.
 
-This example project includes:
+## Folder Structure & Contracts
+This system divides auction logistics into specialized contracts and libraries:
 
-- A simple Hardhat configuration file.
-- Foundry-compatible Solidity unit tests.
-- TypeScript integration tests using `mocha` and ethers.js
-- Examples demonstrating how to connect to different types of networks, including locally simulating OP mainnet.
-
-## Usage
-
-### Running Tests
-
-To run all the tests in the project, execute the following command:
-
-```shell
-npx hardhat test
+```
+Day20/
+├── contracts/
+│   ├── SimpleAuction.sol  # Main coordinator contract combining AuctionHub, BidZone, and Utils
+│   ├── AuctionHub.sol     # Core items registry (creation, updates, deletions, auction state control)
+│   ├── BidZone.sol        # Bidding mechanics, bid tracking, claiming, and withdrawal management
+│   ├── Utils.sol          # Contract administration, activation toggles, ownership, and platform fees
+│   ├── AuctionLib.sol     # Storage engine coordinating item mappings, high bidders, and bid logs
+│   ├── AuctionStruct.sol  # Structured data layouts for auctionable items
+│   └── AuctionTypes.sol   # Auction states (NotActive, Active, Ended, Cancelled) and string utilities
+├── test/
+│   └── SimpleAuction.t.sol # Foundry unit tests checking listing, active bidding, and claiming
+├── scripts/
+│   └── send-op-tx.ts      # Utility script to dispatch transactions
+├── ignition/
+│   └── modules/
+│       └── SimpleAuction.ts # Hardhat Ignition deployment module definition
+└── screenshots/            # Execution screenshots (deployment, hardhat, tests)
 ```
 
-You can also selectively run the Solidity or `mocha` tests:
+### Purpose of Each Contract
+- **SimpleAuction**: Serves as the primary system coordinator. It inherits all modules and exposes public entry points for registrations, updates, bidding, and claims.
+- **AuctionHub**: Implements CRUD workflows for cataloging items, setting up price thresholds, and altering auction statuses (activation, termination, cancellation).
+- **BidZone**: Executes high-bid validation, manages escrow balances, tracks active auction leaders, and implements the withdrawal of outbid ETH.
+- **Utils**: Handles emergency lockdowns, contract-level ownership records, and administrative platform revenue claims.
+- **AuctionLib**: Organizes persistent states into a packed `AuctionData` storage struct to handle internal relations and lookups.
+- **AuctionStruct**: Formulates the core `ItemData` database layout including descriptions, timestamps, reserves, and counts.
+- **AuctionTypes**: Manages strict state transitions and formats human-readable status flags.
 
-```shell
-npx hardhat test solidity
-npx hardhat test mocha
-```
+## Concepts Practiced
+- **Modular Inheritance Pattern**: Composing complex behavior by splitting logic into independent contracts (`AuctionHub`, `BidZone`, `Utils`) and joining them via inheritance.
+- **Pull-Over-Push Payments**: Design pattern implementing manual withdrawals for outbid accounts instead of immediate transfers to protect against reentrancy.
+- **Time-bound Operations**: Using `block.timestamp` and block warp utilities to simulate auction time progression.
+- **Structs & Mappings Libraries**: Using external libraries (`AuctionLib`, `AuctionStruct`) to manage complex, nested Solidity mapping states.
+- **Custom Revert Modifiers**: Utilizing modifiers to check contract state activity and custom error structures for gas efficiency.
 
-### Make a deployment to Sepolia
+## Project Summary
+- **Language used**: Solidity 0.8.28 and TypeScript.
+- **Tools used**: Hardhat, Hardhat Ignition, ethers v6, Mocha, Chai, and forge-std.
+- **Contract name**: SimpleAuction.
+- **Testing**: Hardhat and Foundry test suites passed successfully.
+- **Deployment status**: Deployed to Sepolia and verified on Blockscout.
 
-This project includes an example Ignition module to deploy the contract. You can deploy this module to a locally simulated chain or to Sepolia.
+## Deployment
+- **Network**: Sepolia testnet.
+- **Deployed contract address**: `0xD6C2C324e7870F9f27a3d7c7c0356F8031EA9461`
+- **Verification**: Successfully verified on Blockscout.
 
-To run the deployment to a local chain:
+## Screenshots
+![Hardhat](screenshots/hardhat.png)
 
-```shell
-npx hardhat ignition deploy ignition/modules/Counter.ts
-```
+![Deployment](screenshots/deploy.png)
 
-To run the deployment to Sepolia, you need an account with funds to send the transaction. The provided Hardhat configuration includes a Configuration Variable called `SEPOLIA_PRIVATE_KEY`, which you can use to set the private key of the account you want to use.
-
-You can set the `SEPOLIA_PRIVATE_KEY` variable using the `hardhat-keystore` plugin or by setting it as an environment variable.
-
-To set the `SEPOLIA_PRIVATE_KEY` config variable using `hardhat-keystore`:
-
-```shell
-npx hardhat keystore set SEPOLIA_PRIVATE_KEY
-```
-
-After setting the variable, you can run the deployment with the Sepolia network:
-
-```shell
-npx hardhat ignition deploy --network sepolia ignition/modules/Counter.ts
-```
+![Test results](screenshots/test.png)

@@ -1,57 +1,60 @@
-# Sample Hardhat 3 Beta Project (`mocha` and `ethers`)
+# Day 04 - To Do List
 
-This project showcases a Hardhat 3 Beta project using `mocha` for tests and the `ethers` library for Ethereum interactions.
+## Overview
+To Do List is a Solidity smart contract for managing task entries on-chain. It provides a simple example of list-based state, mutation, and deletion operations.
 
-To learn more about the Hardhat 3 Beta, please visit the [Getting Started guide](https://hardhat.org/docs/getting-started#getting-started-with-hardhat-3). To share your feedback, join our [Hardhat 3 Beta](https://hardhat.org/hardhat3-beta-telegram-group) Telegram group or [open an issue](https://github.com/NomicFoundation/hardhat/issues/new) in our GitHub issue tracker.
+## Smart Contract Purpose
+The contract lets a user create tasks, mark them complete, update them, and remove them from storage while keeping the workflow easy to test.
 
-## Project Overview
+## Features
+- **Task Creation**: Add a new task.
+- **Task Modification**: Update an existing task.
+- **Completion Toggles**: Mark a task as completed.
+- **Task Deletion**: Delete an individual task.
+- **Bulk Reset**: Clear all tasks for a user.
 
-This example project includes:
+## Folder Structure & Contracts
+The repository layout contains:
 
-- A simple Hardhat configuration file.
-- Foundry-compatible Solidity unit tests.
-- TypeScript integration tests using `mocha` and ethers.js
-- Examples demonstrating how to connect to different types of networks, including locally simulating OP mainnet.
-
-## Usage
-
-### Running Tests
-
-To run all the tests in the project, execute the following command:
-
-```shell
-npx hardhat test
+```
+Day04/
+├── contracts/
+│   └── ToDoList.sol    # Core smart contract code
+├── test/
+│   └── ToDoList.ts            # Unit test suite
+├── scripts/
+│   └── send-op-tx.ts         # Script to execute operations
+├── ignition/
+│   └── modules/
+│       └── ToDoList.ts # Hardhat Ignition deployment module
+└── screenshots/              # Execution screenshots (deployment, tests)
 ```
 
-You can also selectively run the Solidity or `mocha` tests:
+### Purpose of the Contract
+- **ToDoList**: Implements a todo list tracker on-chain, storing an array of tasks per user with status flags (completed or not) and task manipulation controls.
 
-```shell
-npx hardhat test solidity
-npx hardhat test mocha
-```
+## Concepts Practiced
+- Dynamic array handling in Solidity.
+- State mutation and task lifecycle management.
+- Ignition deployment on Sepolia.
+- Mocha and Chai test validation.
+- User-specific task isolation.
 
-### Make a deployment to Sepolia
+## Project Summary
+- Language used: Solidity 0.8.28 and TypeScript.
+- Tools used: Hardhat, Hardhat Ignition, ethers v6, Mocha, Chai, and forge-std.
+- Contract name: ToDoList.
+- Testing: Hardhat test suite passed successfully.
+- Deployment status: Deployed to Sepolia and verified on Blockscout.
 
-This project includes an example Ignition module to deploy the contract. You can deploy this module to a locally simulated chain or to Sepolia.
+## Deployment
+- Network: Sepolia testnet.
+- Deployed contract address: 0xAdDD137c0A27c3fE6D06BBbbefA2f1Cc28077883
+- Verification: Successfully verified on Blockscout.
 
-To run the deployment to a local chain:
+## Screenshots
+![Hardhat](screenshots/hardhat.png)
 
-```shell
-npx hardhat ignition deploy ignition/modules/Counter.ts
-```
+![Deployment](screenshots/deploy.png)
 
-To run the deployment to Sepolia, you need an account with funds to send the transaction. The provided Hardhat configuration includes a Configuration Variable called `SEPOLIA_PRIVATE_KEY`, which you can use to set the private key of the account you want to use.
-
-You can set the `SEPOLIA_PRIVATE_KEY` variable using the `hardhat-keystore` plugin or by setting it as an environment variable.
-
-To set the `SEPOLIA_PRIVATE_KEY` config variable using `hardhat-keystore`:
-
-```shell
-npx hardhat keystore set SEPOLIA_PRIVATE_KEY
-```
-
-After setting the variable, you can run the deployment with the Sepolia network:
-
-```shell
-npx hardhat ignition deploy --network sepolia ignition/modules/Counter.ts
-```
+![Test results](screenshots/test.png)

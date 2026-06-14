@@ -1,57 +1,79 @@
-# Sample Hardhat 3 Project (`mocha` and `ethers`)
+# Day 18 - Student Record System
 
-This project showcases a Hardhat 3 project using `mocha` for tests and the `ethers` library for Ethereum interactions.
+## Overview
+Student Record System is a modularized Solidity smart contract project designed for educational institutions to register students, update profile details, record scores (course, class performance, and attendance), and assign final letter grades. It showcases advanced system decomposition, inheritance hierarchies, custom library management, and role-based permissions on-chain.
 
-To learn more about Hardhat 3, please visit the [Getting Started guide](https://hardhat.org/docs/getting-started#getting-started-with-hardhat-3). To share your feedback, join our [Hardhat 3](https://hardhat.org/hardhat3-telegram-group) Telegram group or [open an issue](https://github.com/NomicFoundation/hardhat/issues/new) in our GitHub issue tracker.
+## Smart Contract Purpose
+The project implements a full student lifecycle database. It enables registrars to enroll student profiles, academic managers to insert numerical course assessments, and grading managers to assign academic grades, all within a granular permissions structure.
 
-## Project Overview
+## Features
+- **Student Profile Lifecycle**: Enrolls new student records, updates details, and deletes entries cleanly from storage.
+- **Multitier Staff Roles**: Separates registry access, score management, and final grading across independent assigned staff addresses.
+- **Dynamic Score Tracking**: Accommodates multiple entries for courses, class performance, and attendance.
+- **Comprehensive Grade Evaluation**: Registers enum-restricted academic grades (A, AB, B, etc.).
+- **Global Administrative Controls**: Includes contract pause states (activation/deactivation), ownership handovers, and safe ETH withdrawals.
 
-This example project includes:
+## Folder Structure & Contracts
+The repository is modularized into several components, separating storage, types, utilities, role management, registration, and grade evaluation:
 
-- A simple Hardhat configuration file.
-- Foundry-compatible Solidity unit tests.
-- TypeScript integration tests using `mocha` and ethers.js
-- Examples demonstrating how to connect to different types of networks, including locally simulating OP mainnet.
-
-## Usage
-
-### Running Tests
-
-To run all the tests in the project, execute the following command:
-
-```shell
-npx hardhat test
+```
+Day18/
+├── contracts/
+│   ├── StudentRecordSystem.sol    # Main entrypoint contract (combines all modules via inheritance)
+│   ├── AdminManager.sol          # Role and access control management for staff and admin roles
+│   ├── StudentRegistry.sol       # Student profile registration and CRUD management
+│   ├── AcademicRecordManager.sol # Student scores manager (tracks course, performance, and attendance scores)
+│   ├── GradesManager.sol         # Evaluates and registers grade levels for recorded scores
+│   ├── StudentLib.sol            # Storage library managing records, mappings, and existence checks
+│   ├── StudentStructs.sol        # Shared struct definitions (StudentInput, StudentRecord, etc.)
+│   ├── StudentTypes.sol          # System enums (StudentGender, StudentStatus, Grade)
+│   ├── StudentUtils.sol          # Utility methods for type formatting and status-to-string conversion
+│   └── Utils.sol                 # Shared base logic for contract activity toggles, ownership, and funds withdrawal
+├── test/
+│   └── StudentRecordSystem.t.sol # Foundry unit tests checking registration, grading, and roles
+├── scripts/
+│   ├── deploy-student-record-system.ts # Ignition and Hardhat deployment script
+│   └── send-op-tx.ts             # Operational transaction utility script
+├── ignition/
+│   └── modules/
+│       └── StudentRecordSystem.ts # Hardhat Ignition deployment module definition
+└── screenshots/                  # Execution screenshots (deployment, hardhat, tests)
 ```
 
-You can also selectively run the Solidity or `mocha` tests:
+### Purpose of Each Contract
+- **StudentRecordSystem**: Synthesizes all system behaviors (registration, grade tracking, updates, deletions) into a single, cohesive external API. It utilizes `StudentLib` to access student storage securely.
+- **AdminManager**: Implements role assignments (e.g., Registrar, GradesManager, AcademicRecordManager) to enable granular access control for educational staff.
+- **StudentRegistry**: Manages the core CRUD logic (registration, detail updates, profile deletion) of student records.
+- **AcademicRecordManager**: Provides functions to append numerical scores for coursework, attendance, and class performance.
+- **GradesManager**: Allows assigned Grade Managers to record final alphabet grades (e.g., A, AB, B, etc.) for registered student profiles.
+- **StudentLib**: Storage library providing data structures (`StudentStorage`) and helper operations (`exist`, `existAddress`, `getStudent`) to prevent state corruption.
+- **StudentStructs**: Formulates common structured models for inputs (`StudentInput`, `UpdateStudentInput`) and internal storage (`StudentRecord`).
+- **StudentTypes**: Restricts gender, status, and grading boundaries to defined enums (e.g., `StudentStatus` values `Active`, `Suspended`, `Graduated`, `Expelled`).
+- **StudentUtils**: Handles library utilities such as mapping enum constants to readable string formatting.
+- **Utils**: Implements essential ownership safeguards, emergency activation controls, and fee withdrawal procedures.
 
-```shell
-npx hardhat test solidity
-npx hardhat test mocha
-```
+## Concepts Practiced
+- **Modular Smart Contract Architecture**: Breaking down monolithic smart contracts into specialized modules using inheritance.
+- **Solidity Libraries & Storage Pointers**: Using external libraries and the `storage` keyword to manipulate complex multi-mapping structures.
+- **Granular Access Control**: Defining custom modifiers for different roles (Registrar, Academic Manager, Grading Manager) and using modifiers to enforce security.
+- **Enums & Struct Packing**: Using enums and packed structs to represent student properties gas-efficiently.
+- **Hardhat Ignition & Foundry Testing**: Writing complex mock and logic tests in Solidity using Forge Test, and deploying via Hardhat Ignition.
 
-### Make a deployment to Sepolia
+## Project Summary
+- **Language used**: Solidity 0.8.28 and TypeScript.
+- **Tools used**: Hardhat, Hardhat Ignition, ethers v6, Mocha, Chai, and forge-std.
+- **Contract name**: StudentRecordSystem.
+- **Testing**: Hardhat and Foundry test suites passed successfully.
+- **Deployment status**: Deployed to Sepolia and verified on Blockscout.
 
-This project includes an example Ignition module to deploy the contract. You can deploy this module to a locally simulated chain or to Sepolia.
+## Deployment
+- **Network**: Sepolia testnet.
+- **Deployed contract address**: `0x24F98d9C6b55f516FE9d582969DC00C38A5C6026`
+- **Verification**: Successfully verified on Blockscout.
 
-To run the deployment to a local chain:
+## Screenshots
+![Hardhat](screenshots/hardhat.png)
 
-```shell
-npx hardhat ignition deploy ignition/modules/Counter.ts
-```
+![Deployment](screenshots/deploy.png)
 
-To run the deployment to Sepolia, you need an account with funds to send the transaction. The provided Hardhat configuration includes a Configuration Variable called `SEPOLIA_PRIVATE_KEY`, which you can use to set the private key of the account you want to use.
-
-You can set the `SEPOLIA_PRIVATE_KEY` variable using the `hardhat-keystore` plugin or by setting it as an environment variable.
-
-To set the `SEPOLIA_PRIVATE_KEY` config variable using `hardhat-keystore`:
-
-```shell
-npx hardhat keystore set SEPOLIA_PRIVATE_KEY
-```
-
-After setting the variable, you can run the deployment with the Sepolia network:
-
-```shell
-npx hardhat ignition deploy --network sepolia ignition/modules/Counter.ts
-```
+![Test results](screenshots/test.png)

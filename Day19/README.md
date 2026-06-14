@@ -1,57 +1,60 @@
-# Sample Hardhat 3 Project (`mocha` and `ethers`)
+# Day 19 - Optimized Gas Saver
 
-This project showcases a Hardhat 3 project using `mocha` for tests and the `ethers` library for Ethereum interactions.
+## Overview
+Optimized Gas Saver is a Solidity smart contract project focused on demonstrating advanced gas-saving techniques in Solidity. It stores user profiles (consisting of name information and age) on-chain and contrasts an optimized, professional-grade implementation with a typical unoptimized storage approach.
 
-To learn more about Hardhat 3, please visit the [Getting Started guide](https://hardhat.org/docs/getting-started#getting-started-with-hardhat-3). To share your feedback, join our [Hardhat 3](https://hardhat.org/hardhat3-telegram-group) Telegram group or [open an issue](https://github.com/NomicFoundation/hardhat/issues/new) in our GitHub issue tracker.
+## Smart Contract Purpose
+The contract permits users to register, update, and delete their profile information while minimizing gas fees. It highlights how choosing the correct variable types, packing structs, and using custom errors instead of revert strings significantly reduces transaction execution costs.
 
-## Project Overview
+## Features
+- **User Profile Storage**: Register, update, retrieve, and delete profile records on-chain.
+- **Custom Errors**: Utilizes custom errors (`error`) to save deployment and execution gas compared to `require` string messages.
+- **Fixed-size Types**: Uses `bytes16` for names instead of dynamic `string` arrays to lower storage storage overhead.
+- **Struct Packaging**: Groups variables (`fName`, `mName`, `lName`, `age`) to store them tightly, packing multiple values within a single storage slot.
+- **Administrative Queries**: Allows the contract owner to view any user's profile while general users can only query their own.
 
-This example project includes:
+## Folder Structure & Contracts
+The repository layout contains:
 
-- A simple Hardhat configuration file.
-- Foundry-compatible Solidity unit tests.
-- TypeScript integration tests using `mocha` and ethers.js
-- Examples demonstrating how to connect to different types of networks, including locally simulating OP mainnet.
-
-## Usage
-
-### Running Tests
-
-To run all the tests in the project, execute the following command:
-
-```shell
-npx hardhat test
+```
+Day19/
+├── contracts/
+│   └── OptimizedGasSaver.sol    # Gas-optimized contract (with commented-out unoptimized example)
+├── test/
+│   └── OptimizedGasSaver.t.sol  # Foundry/Hardhat Solidity tests verifying CRUD and access restrictions
+├── scripts/
+│   └── send-op-tx.ts             # Script to execute transactions on Optimism/Sepolia
+├── ignition/
+│   └── modules/
+│       └── OptimizedGasSaver.ts # Hardhat Ignition deployment module definition
+└── screenshots/                  # Execution screenshots (deployment, hardhat, tests)
 ```
 
-You can also selectively run the Solidity or `mocha` tests:
+### Purpose of the Contract
+- **OptimizedGasSaver**: Handles the storage and CRUD operations of user records. It demonstrates gas optimization tricks by using fixed-size byte types (`bytes16`), packed structures, and low-cost execution checks.
+- **unOptimized (Commented Example)**: Included at the bottom of the source file to demonstrate how dynamic `string` variables and `require` statements balloon gas usage.
 
-```shell
-npx hardhat test solidity
-npx hardhat test mocha
-```
+## Concepts Practiced
+- **Solidity Gas Optimization**: Learning and applying memory vs storage differences, bytes vs strings, and custom errors vs strings.
+- **Struct Packing**: Understanding storage layout slots (256-bit slots) and layout packing.
+- **Immutable Variables**: Using the `immutable` keyword for ownership properties to save gas on state reads.
+- **Unit Testing**: Simulating call contexts (`vm.prank`, `vm.expectRevert`) using Forge Test to verify contract behaviors.
 
-### Make a deployment to Sepolia
+## Project Summary
+- **Language used**: Solidity 0.8.28 and TypeScript.
+- **Tools used**: Hardhat, Hardhat Ignition, ethers v6, Mocha, Chai, and forge-std.
+- **Contract name**: OptimizedGasSaver.
+- **Testing**: Hardhat and Foundry test suites passed successfully.
+- **Deployment status**: Deployed to Sepolia and verified on Blockscout.
 
-This project includes an example Ignition module to deploy the contract. You can deploy this module to a locally simulated chain or to Sepolia.
+## Deployment
+- **Network**: Sepolia testnet.
+- **Deployed contract address**: `0xCeB8c5a14Ca52Ad7d575a0658177995086eF1E57`
+- **Verification**: Successfully verified on Blockscout.
 
-To run the deployment to a local chain:
+## Screenshots
+![Hardhat](screenshots/hardhat.png)
 
-```shell
-npx hardhat ignition deploy ignition/modules/Counter.ts
-```
+![Deployment](screenshots/deploy.png)
 
-To run the deployment to Sepolia, you need an account with funds to send the transaction. The provided Hardhat configuration includes a Configuration Variable called `SEPOLIA_PRIVATE_KEY`, which you can use to set the private key of the account you want to use.
-
-You can set the `SEPOLIA_PRIVATE_KEY` variable using the `hardhat-keystore` plugin or by setting it as an environment variable.
-
-To set the `SEPOLIA_PRIVATE_KEY` config variable using `hardhat-keystore`:
-
-```shell
-npx hardhat keystore set SEPOLIA_PRIVATE_KEY
-```
-
-After setting the variable, you can run the deployment with the Sepolia network:
-
-```shell
-npx hardhat ignition deploy --network sepolia ignition/modules/Counter.ts
-```
+![Test results](screenshots/test.png)

@@ -1,57 +1,60 @@
-# Sample Hardhat 3 Project (`mocha` and `ethers`)
+# Day 08 - Basic KYC
 
-This project showcases a Hardhat 3 project using `mocha` for tests and the `ethers` library for Ethereum interactions.
+## Overview
+Basic KYC is a Solidity smart contract for registering users, managing verification status, and removing user records. It is a compact identity and access-control example.
 
-To learn more about Hardhat 3, please visit the [Getting Started guide](https://hardhat.org/docs/getting-started#getting-started-with-hardhat-3). To share your feedback, join our [Hardhat 3](https://hardhat.org/hardhat3-telegram-group) Telegram group or [open an issue](https://github.com/NomicFoundation/hardhat/issues/new) in our GitHub issue tracker.
+## Smart Contract Purpose
+The contract lets an owner register users, mark them verified, remove verification, and delete user data. It models a minimal know-your-customer style workflow on-chain.
 
-## Project Overview
+## Features
+- **User Onboarding**: Register a user address.
+- **Uniqueness Guards**: Prevent duplicate registrations.
+- **Status Verification**: Verify or unverify a registered user.
+- **Record Deletion**: Delete a user record.
+- **Management Safeguards**: Restrict management functions to the owner.
 
-This example project includes:
+## Folder Structure & Contracts
+The repository layout contains:
 
-- A simple Hardhat configuration file.
-- Foundry-compatible Solidity unit tests.
-- TypeScript integration tests using `mocha` and ethers.js
-- Examples demonstrating how to connect to different types of networks, including locally simulating OP mainnet.
-
-## Usage
-
-### Running Tests
-
-To run all the tests in the project, execute the following command:
-
-```shell
-npx hardhat test
+```
+Day08/
+├── contracts/
+│   └── BasicKYC.sol    # Core smart contract code
+├── test/
+│   └── BasicKYC.ts            # Unit test suite
+├── scripts/
+│   └── send-op-tx.ts         # Script to execute operations
+├── ignition/
+│   └── modules/
+│       └── BasicKYC.ts # Hardhat Ignition deployment module
+└── screenshots/              # Execution screenshots (deployment, tests)
 ```
 
-You can also selectively run the Solidity or `mocha` tests:
+### Purpose of the Contract
+- **BasicKYC**: Provides a basic KYC verification directory, allowing an admin/owner to register addresses, toggle their verified state, and check verification status on-chain.
 
-```shell
-npx hardhat test solidity
-npx hardhat test mocha
-```
+## Concepts Practiced
+- On-chain identity records.
+- Role-based access control.
+- Revert handling for duplicate and invalid states.
+- Hardhat Ignition deployment and testing.
+- Sepolia deployment and verification.
 
-### Make a deployment to Sepolia
+## Project Summary
+- Language used: Solidity 0.8.28 and TypeScript.
+- Tools used: Hardhat, Hardhat Ignition, ethers v6, Mocha, Chai, and forge-std.
+- Contract name: BasicKYC.
+- Testing: Hardhat test suite passed successfully.
+- Deployment status: Deployed to Sepolia and verified on Blockscout.
 
-This project includes an example Ignition module to deploy the contract. You can deploy this module to a locally simulated chain or to Sepolia.
+## Deployment
+- Network: Sepolia testnet.
+- Deployed contract address: 0x0A66Fe8460f5244bf50Bd176953789b4B24bcdD9
+- Verification: Successfully verified on Blockscout.
 
-To run the deployment to a local chain:
+## Screenshots
+![Hardhat](screenshots/hardhat.png)
 
-```shell
-npx hardhat ignition deploy ignition/modules/Counter.ts
-```
+![Deployment](screenshots/deploy.png)
 
-To run the deployment to Sepolia, you need an account with funds to send the transaction. The provided Hardhat configuration includes a Configuration Variable called `SEPOLIA_PRIVATE_KEY`, which you can use to set the private key of the account you want to use.
-
-You can set the `SEPOLIA_PRIVATE_KEY` variable using the `hardhat-keystore` plugin or by setting it as an environment variable.
-
-To set the `SEPOLIA_PRIVATE_KEY` config variable using `hardhat-keystore`:
-
-```shell
-npx hardhat keystore set SEPOLIA_PRIVATE_KEY
-```
-
-After setting the variable, you can run the deployment with the Sepolia network:
-
-```shell
-npx hardhat ignition deploy --network sepolia ignition/modules/Counter.ts
-```
+![Test results](screenshots/test.png)

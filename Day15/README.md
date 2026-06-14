@@ -1,57 +1,60 @@
-# Sample Hardhat 3 Project (`mocha` and `ethers`)
+# Day 15 - Wallet Guard
 
-This project showcases a Hardhat 3 project using `mocha` for tests and the `ethers` library for Ethereum interactions.
+## Overview
+Wallet Guard is a Solidity smart contract for protecting a wallet with whitelist controls, activation state, and ETH transfer restrictions. It is a security-focused access-control exercise.
 
-To learn more about Hardhat 3, please visit the [Getting Started guide](https://hardhat.org/docs/getting-started#getting-started-with-hardhat-3). To share your feedback, join our [Hardhat 3](https://hardhat.org/hardhat3-telegram-group) Telegram group or [open an issue](https://github.com/NomicFoundation/hardhat/issues/new) in our GitHub issue tracker.
+## Smart Contract Purpose
+The contract allows the owner to activate or deactivate the wallet, manage whitelisted addresses, and control who can send ETH or access protected functions.
 
-## Project Overview
+## Features
+- **Access Control**: Add and remove whitelisted addresses.
+- **Duplicate Prevention**: Prevent duplicate whitelist entries.
+- **Contract Controls**: Activate and deactivate the contract.
+- **Transfer Permissions**: Restrict ETH sending to authorized users.
+- **Safety Guarding**: Guard sensitive transfer and management actions.
 
-This example project includes:
+## Folder Structure & Contracts
+The repository layout contains:
 
-- A simple Hardhat configuration file.
-- Foundry-compatible Solidity unit tests.
-- TypeScript integration tests using `mocha` and ethers.js
-- Examples demonstrating how to connect to different types of networks, including locally simulating OP mainnet.
-
-## Usage
-
-### Running Tests
-
-To run all the tests in the project, execute the following command:
-
-```shell
-npx hardhat test
+```
+Day15/
+├── contracts/
+│   └── WalletGuard.sol    # Core smart contract code
+├── test/
+│   └── WalletGuard.t.sol            # Unit test suite
+├── scripts/
+│   └── send-op-tx.ts         # Script to execute operations
+├── ignition/
+│   └── modules/
+│       └── WalletGuard.ts # Hardhat Ignition deployment module
+└── screenshots/              # Execution screenshots (deployment, tests)
 ```
 
-You can also selectively run the Solidity or `mocha` tests:
+### Purpose of the Contract
+- **WalletGuard**: Provides a guarded multisig or access control system, locking and unlocking transaction operations, maintaining a whitelist, and securing outgoing funds.
 
-```shell
-npx hardhat test solidity
-npx hardhat test mocha
-```
+## Concepts Practiced
+- Whitelist-based authorization.
+- Contract lifecycle management.
+- ETH transfer restrictions and fallback handling.
+- Hardhat Ignition deployment and verification.
+- Sepolia deployment and testing.
 
-### Make a deployment to Sepolia
+## Project Summary
+- Language used: Solidity 0.8.28 and TypeScript.
+- Tools used: Hardhat, Hardhat Ignition, ethers v6, Mocha, Chai, and forge-std.
+- Contract name: WalletGuard.
+- Testing: Solidity and Hardhat tests passed successfully.
+- Deployment status: Deployed to Sepolia and verified on Blockscout.
 
-This project includes an example Ignition module to deploy the contract. You can deploy this module to a locally simulated chain or to Sepolia.
+## Deployment
+- Network: Sepolia testnet.
+- Deployed contract address: 0x1421FFdDf0e2C2033310E5Fc77eAb7A48a5E70CB
+- Verification: Successfully verified on Blockscout.
 
-To run the deployment to a local chain:
+## Screenshots
+![Hardhat](screenshots/hardhat.png)
 
-```shell
-npx hardhat ignition deploy ignition/modules/Counter.ts
-```
+![Deployment](screenshots/deploy.png)
 
-To run the deployment to Sepolia, you need an account with funds to send the transaction. The provided Hardhat configuration includes a Configuration Variable called `SEPOLIA_PRIVATE_KEY`, which you can use to set the private key of the account you want to use.
-
-You can set the `SEPOLIA_PRIVATE_KEY` variable using the `hardhat-keystore` plugin or by setting it as an environment variable.
-
-To set the `SEPOLIA_PRIVATE_KEY` config variable using `hardhat-keystore`:
-
-```shell
-npx hardhat keystore set SEPOLIA_PRIVATE_KEY
-```
-
-After setting the variable, you can run the deployment with the Sepolia network:
-
-```shell
-npx hardhat ignition deploy --network sepolia ignition/modules/Counter.ts
-```
+![Test results](screenshots/test.png)

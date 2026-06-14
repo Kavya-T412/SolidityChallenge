@@ -1,57 +1,60 @@
-# Sample Hardhat 3 Beta Project (`mocha` and `ethers`)
+# Day 02 - Quote Store
 
-This project showcases a Hardhat 3 Beta project using `mocha` for tests and the `ethers` library for Ethereum interactions.
+## Overview
+Quote Store is a Solidity smart contract project for storing and retrieving inspirational quotes on-chain. It demonstrates a small but practical storage workflow built with Hardhat and Ignition.
 
-To learn more about the Hardhat 3 Beta, please visit the [Getting Started guide](https://hardhat.org/docs/getting-started#getting-started-with-hardhat-3). To share your feedback, join our [Hardhat 3 Beta](https://hardhat.org/hardhat3-beta-telegram-group) Telegram group or [open an issue](https://github.com/NomicFoundation/hardhat/issues/new) in our GitHub issue tracker.
+## Smart Contract Purpose
+The contract allows a user to save a quote, update it, retrieve it later, and manage the stored quote with basic on-chain persistence.
 
-## Project Overview
+## Features
+- **Quote Storage**: Store a quote for the current user.
+- **Quote Retrieval**: Retrieve the saved quote.
+- **Quote Updates**: Update an existing quote.
+- **Quote Deletion**: Delete stored quote data.
+- **Minimalist Design**: Keep the contract interface minimal for testing and learning.
 
-This example project includes:
+## Folder Structure & Contracts
+The repository layout contains:
 
-- A simple Hardhat configuration file.
-- Foundry-compatible Solidity unit tests.
-- TypeScript integration tests using `mocha` and ethers.js
-- Examples demonstrating how to connect to different types of networks, including locally simulating OP mainnet.
-
-## Usage
-
-### Running Tests
-
-To run all the tests in the project, execute the following command:
-
-```shell
-npx hardhat test
+```
+Day02/
+├── contracts/
+│   └── QuoteStore.sol    # Core smart contract code
+├── test/
+│   └── QuoteStore.ts            # Unit test suite
+├── scripts/
+│   └── send-op-tx.ts         # Script to execute operations
+├── ignition/
+│   └── modules/
+│       └── QuoteStore.ts # Hardhat Ignition deployment module
+└── screenshots/              # Execution screenshots (deployment, tests)
 ```
 
-You can also selectively run the Solidity or `mocha` tests:
+### Purpose of the Contract
+- **QuoteStore**: Functions as a decentralized memo pad, allowing a user to persist a custom text quote on-chain, update it, and manage its state.
 
-```shell
-npx hardhat test solidity
-npx hardhat test mocha
-```
+## Concepts Practiced
+- On-chain string storage.
+- CRUD contract design.
+- Hardhat Ignition deployment flow.
+- TypeScript-based Mocha and Chai testing.
+- Sepolia testnet deployment and verification.
 
-### Make a deployment to Sepolia
+## Project Summary
+- Language used: Solidity 0.8.28 and TypeScript.
+- Tools used: Hardhat, Hardhat Ignition, ethers v6, Mocha, Chai, and forge-std.
+- Contract name: QuoteStore.
+- Testing: Hardhat test suite passed successfully.
+- Deployment status: Deployed to Sepolia and verified on Blockscout.
 
-This project includes an example Ignition module to deploy the contract. You can deploy this module to a locally simulated chain or to Sepolia.
+## Deployment
+- Network: Sepolia testnet.
+- Deployed contract address: 0x4B950Ad7673F45840CDeB98AfcB4f44B08998761
+- Verification: Successfully verified on Blockscout.
 
-To run the deployment to a local chain:
+## Screenshots
+![Hardhat](screenshots/hardhat.png)
 
-```shell
-npx hardhat ignition deploy ignition/modules/Counter.ts
-```
+![Deployment](screenshots/deploy.png)
 
-To run the deployment to Sepolia, you need an account with funds to send the transaction. The provided Hardhat configuration includes a Configuration Variable called `SEPOLIA_PRIVATE_KEY`, which you can use to set the private key of the account you want to use.
-
-You can set the `SEPOLIA_PRIVATE_KEY` variable using the `hardhat-keystore` plugin or by setting it as an environment variable.
-
-To set the `SEPOLIA_PRIVATE_KEY` config variable using `hardhat-keystore`:
-
-```shell
-npx hardhat keystore set SEPOLIA_PRIVATE_KEY
-```
-
-After setting the variable, you can run the deployment with the Sepolia network:
-
-```shell
-npx hardhat ignition deploy --network sepolia ignition/modules/Counter.ts
-```
+![Test results](screenshots/test.png)

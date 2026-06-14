@@ -1,57 +1,58 @@
-# Sample Hardhat 3 Beta Project (`mocha` and `ethers`)
+# Day 01 - User Storage
 
-This project showcases a Hardhat 3 Beta project using `mocha` for tests and the `ethers` library for Ethereum interactions.
+## Overview
+User Storage is a Solidity smart contract project focused on storing, updating, retrieving, and deleting user profile data on-chain. It is a compact Hardhat exercise that demonstrates how persistent contract state behaves in a simple CRUD workflow.
 
-To learn more about the Hardhat 3 Beta, please visit the [Getting Started guide](https://hardhat.org/docs/getting-started#getting-started-with-hardhat-3). To share your feedback, join our [Hardhat 3 Beta](https://hardhat.org/hardhat3-beta-telegram-group) Telegram group or [open an issue](https://github.com/NomicFoundation/hardhat/issues/new) in our GitHub issue tracker.
+## Smart Contract Purpose
+The contract lets a user save personal data on-chain, view it later, update the stored record, and remove it when needed. The project is centered on basic state management and user-specific storage logic.
 
-## Project Overview
+## Features
+- **Profile Storage**: Store user information in contract storage.
+- **Profile Retrieval**: Retrieve the saved user data.
+- **Profile Updates**: Update an existing record.
+- **Profile Deletion**: Delete stored user data.
+- **Simplified Interface**: Keep the interface simple for basic transaction testing.
 
-This example project includes:
+## Folder Structure & Contracts
+The repository layout contains:
 
-- A simple Hardhat configuration file.
-- Foundry-compatible Solidity unit tests.
-- TypeScript integration tests using `mocha` and ethers.js
-- Examples demonstrating how to connect to different types of networks, including locally simulating OP mainnet.
-
-## Usage
-
-### Running Tests
-
-To run all the tests in the project, execute the following command:
-
-```shell
-npx hardhat test
+```
+Day01/
+├── contracts/
+│   └── UserStorage.sol    # Core smart contract code
+├── test/
+│   └── UserStorage.ts            # Unit test suite
+├── scripts/
+│   └── send-op-tx.ts         # Script to execute operations
+├── ignition/
+│   └── modules/
+│       └── UserStorage.ts # Hardhat Ignition deployment module
+└── screenshots/              # Execution screenshots (deployment, tests)
 ```
 
-You can also selectively run the Solidity or `mocha` tests:
+### Purpose of the Contract
+- **UserStorage**: Enables decentralized profile registries by storing personal data attributes (such as user details) directly in blockchain storage and offering CRUD functionalities.
 
-```shell
-npx hardhat test solidity
-npx hardhat test mocha
-```
+## Concepts Practiced
+- Solidity state variables and mappings.
+- CRUD-style smart contract design.
+- Hardhat project setup and Ignition deployment.
+- TypeScript testing with Mocha, Chai, and ethers.
+- Sepolia testnet deployment and verification.
 
-### Make a deployment to Sepolia
+## Project Summary
+- Language used: Solidity 0.8.28 and TypeScript.
+- Tools used: Hardhat, Hardhat Ignition, ethers v6, Mocha, Chai, and forge-std.
+- Contract name: UserStorage.
+- Testing: Hardhat test suite passed successfully.
+- Deployment status: Deployed to Sepolia and verified on Blockscout.
 
-This project includes an example Ignition module to deploy the contract. You can deploy this module to a locally simulated chain or to Sepolia.
+## Deployment
+- Network: Sepolia testnet.
+- Deployed contract address: 0x3fbC6265AE7B43B1f315B710BB9E2da885a95a9a
+- Verification: Successfully verified on Blockscout.
 
-To run the deployment to a local chain:
+## Screenshots
+![Deployment](screenshots/deploy.png)
 
-```shell
-npx hardhat ignition deploy ignition/modules/Counter.ts
-```
-
-To run the deployment to Sepolia, you need an account with funds to send the transaction. The provided Hardhat configuration includes a Configuration Variable called `SEPOLIA_PRIVATE_KEY`, which you can use to set the private key of the account you want to use.
-
-You can set the `SEPOLIA_PRIVATE_KEY` variable using the `hardhat-keystore` plugin or by setting it as an environment variable.
-
-To set the `SEPOLIA_PRIVATE_KEY` config variable using `hardhat-keystore`:
-
-```shell
-npx hardhat keystore set SEPOLIA_PRIVATE_KEY
-```
-
-After setting the variable, you can run the deployment with the Sepolia network:
-
-```shell
-npx hardhat ignition deploy --network sepolia ignition/modules/Counter.ts
-```
+![Test results](screenshots/test.png)
