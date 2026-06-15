@@ -41,16 +41,16 @@ Day16/
 - Sepolia deployment and verification.
 
 ## Project Summary
-- Language used: Solidity 0.8.28 and TypeScript.
-- Tools used: Hardhat, Hardhat Ignition, ethers v6, Mocha, Chai, and forge-std.
-- Contract name: DecentralizedPoll.
-- Testing: Solidity and Hardhat tests passed successfully.
-- Deployment status: Deployed to Sepolia and verified on Blockscout.
+- **Language used**: Solidity 0.8.28 and TypeScript.
+- **Tools used**: Hardhat, Hardhat Ignition, ethers v6, Mocha, Chai, and forge-std.
+- **Contract name**: DecentralizedPoll.
+- **Testing**: Solidity and Hardhat tests passed successfully.
+- **Deployment status**: Deployed to Sepolia and verified on Blockscout.
 
 ## Deployment
-- Network: Sepolia testnet.
-- Deployed contract address: 0xC85c4f9Cba173Ebf25316899d1B579C45e2562cF
-- Verification: Successfully verified on Blockscout.
+- **Network**: Sepolia testnet.
+- **Deployed contract address**: 0xC85c4f9Cba173Ebf25316899d1B579C45e2562cF
+- **Verification**: Successfully verified on Blockscout.
 
 ## Screenshots
 
@@ -58,7 +58,7 @@ Day16/
 
 ![Hardhat](screenshots/hardhat.png)
 
-**Deployemnt** : npx hardhat ignition deploy ./ignition/modules/SimpleAuction.ts --network sepolia --verify
+**Deployemnt** : npx hardhat ignition deploy ./ignition/modules/DecentralizedPoll.ts --network sepolia --verify
 
 ![Deployment](screenshots/deploy.png)
 

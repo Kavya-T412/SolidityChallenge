@@ -41,16 +41,16 @@ Day14/
 - Sepolia deployment and verification.
 
 ## Project Summary
-- Language used: Solidity 0.8.28 and TypeScript.
-- Tools used: Hardhat, Hardhat Ignition, ethers v6, Mocha, Chai, and forge-std.
-- Contract name: ReferralSystem.
-- Testing: Solidity and Hardhat tests passed successfully.
-- Deployment status: Deployed to Sepolia and verified on Blockscout.
+- **Language used**: Solidity 0.8.28 and TypeScript.
+- **Tools used**: Hardhat, Hardhat Ignition, ethers v6, Mocha, Chai, and forge-std.
+- **Contract name**: ReferralSystem.
+- **Testing**: Solidity and Hardhat tests passed successfully.
+- **Deployment status**: Deployed to Sepolia and verified on Blockscout.
 
 ## Deployment
-- Network: Sepolia testnet.
-- Deployed contract address: 0x30C745BAf66e2B97f6b4d1dCf87E503e28a2F786
-- Verification: Successfully verified on Blockscout.
+- **Network**: Sepolia testnet.
+- **Deployed contract address**: 0x30C745BAf66e2B97f6b4d1dCf87E503e28a2F786
+- **Verification**: Successfully verified on Blockscout.
 
 ## Screenshots
 
@@ -58,7 +58,7 @@ Day14/
 
 ![Hardhat](screenshots/hardhat.png)
 
-**Deployemnt** : npx hardhat ignition deploy ./ignition/modules/SimpleAuction.ts --network sepolia --verify
+**Deployemnt** : npx hardhat ignition deploy ./ignition/modules/ReferralSystem.ts --network sepolia --verify
 
 ![Deployment](screenshots/deploy.png)
 

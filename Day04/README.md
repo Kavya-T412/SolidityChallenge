@@ -41,16 +41,16 @@ Day04/
 - User-specific task isolation.
 
 ## Project Summary
-- Language used: Solidity 0.8.28 and TypeScript.
-- Tools used: Hardhat, Hardhat Ignition, ethers v6, Mocha, Chai, and forge-std.
-- Contract name: ToDoList.
-- Testing: Hardhat test suite passed successfully.
-- Deployment status: Deployed to Sepolia and verified on Blockscout.
+- **Language used**: Solidity 0.8.28 and TypeScript.
+- **Tools used**: Hardhat, Hardhat Ignition, ethers v6, Mocha, Chai, and forge-std.
+- **Contract name**: ToDoList.
+- **Testing**: Hardhat test suite passed successfully.
+- **Deployment status**: Deployed to Sepolia and verified on Blockscout.
 
 ## Deployment
-- Network: Sepolia testnet.
-- Deployed contract address: 0xAdDD137c0A27c3fE6D06BBbbefA2f1Cc28077883
-- Verification: Successfully verified on Blockscout.
+- **Network**: Sepolia testnet.
+- **Deployed contract address**: 0xAdDD137c0A27c3fE6D06BBbbefA2f1Cc28077883
+- **Verification**: Successfully verified on Blockscout.
 
 ## Screenshots
 
@@ -58,7 +58,7 @@ Day04/
 
 ![Hardhat](screenshots/hardhat.png)
 
-**Deployemnt** : npx hardhat ignition deploy ./ignition/modules/SimpleAuction.ts --network sepolia --verify
+**Deployemnt** : npx hardhat ignition deploy ./ignition/modules/ToDoList.ts --network sepolia --verify
 
 ![Deployment](screenshots/deploy.png)
 

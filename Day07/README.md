@@ -41,16 +41,16 @@ Day07/
 - Sepolia deployment and verification.
 
 ## Project Summary
-- Language used: Solidity 0.8.28 and TypeScript.
-- Tools used: Hardhat, Hardhat Ignition, ethers v6, Mocha, Chai, and forge-std.
-- Contract name: DonationVault.
-- Testing: Hardhat test suite passed successfully.
-- Deployment status: Deployed to Sepolia and verified on Blockscout.
+- **Language used**: Solidity 0.8.28 and TypeScript.
+- **Tools used**: Hardhat, Hardhat Ignition, ethers v6, Mocha, Chai, and forge-std.
+- **Contract name**: DonationVault.
+- **Testing**: Hardhat test suite passed successfully.
+- **Deployment status**: Deployed to Sepolia and verified on Blockscout.
 
 ## Deployment
-- Network: Sepolia testnet.
-- Deployed contract address: 0x0094e9449A8D557064108c5C0f46edbe924280a8
-- Verification: Successfully verified on Blockscout.
+- **Network**: Sepolia testnet.
+- **Deployed contract address**: 0x0094e9449A8D557064108c5C0f46edbe924280a8
+- **Verification**: Successfully verified on Blockscout.
 
 ## Screenshots
 
@@ -58,7 +58,7 @@ Day07/
 
 ![Hardhat](screenshots/hardhat.png)
 
-**Deployemnt** : npx hardhat ignition deploy ./ignition/modules/SimpleAuction.ts --network sepolia --verify
+**Deployemnt** : npx hardhat ignition deploy ./ignition/modules/DonationVault.ts --network sepolia --verify
 
 ![Deployment](screenshots/deploy.png)
 

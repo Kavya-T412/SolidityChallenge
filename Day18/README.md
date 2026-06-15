@@ -77,7 +77,7 @@ Day18/
 
 ![Hardhat](screenshots/hardhat.png)
 
-**Deployemnt** : npx hardhat ignition deploy ./ignition/modules/SimpleAuction.ts --network sepolia --verify
+**Deployemnt** : npx hardhat ignition deploy ./ignition/modules/StudentRecordSystem.ts --network sepolia --verify
 
 ![Deployment](screenshots/deploy.png)
 

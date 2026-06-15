@@ -41,16 +41,16 @@ Day02/
 - Sepolia testnet deployment and verification.
 
 ## Project Summary
-- Language used: Solidity 0.8.28 and TypeScript.
-- Tools used: Hardhat, Hardhat Ignition, ethers v6, Mocha, Chai, and forge-std.
-- Contract name: QuoteStore.
-- Testing: Hardhat test suite passed successfully.
-- Deployment status: Deployed to Sepolia and verified on Blockscout.
+- **Language used**: Solidity 0.8.28 and TypeScript.
+- **Tools used**: Hardhat, Hardhat Ignition, ethers v6, Mocha, Chai, and forge-std.
+- **Contract name**: QuoteStore.
+- **Testing**: Hardhat test suite passed successfully.
+- **Deployment status**: Deployed to Sepolia and verified on Blockscout.
 
 ## Deployment
-- Network: Sepolia testnet.
-- Deployed contract address: 0x4B950Ad7673F45840CDeB98AfcB4f44B08998761
-- Verification: Successfully verified on Blockscout.
+- **Network**: Sepolia testnet.
+- **Deployed contract address**: 0x4B950Ad7673F45840CDeB98AfcB4f44B08998761
+- **Verification**: Successfully verified on Blockscout.
 
 ## Screenshots
 
@@ -58,7 +58,7 @@ Day02/
 
 ![Hardhat](screenshots/hardhat.png)
 
-**Deployemnt** : npx hardhat ignition deploy ./ignition/modules/SimpleAuction.ts --network sepolia --verify
+**Deployemnt** : npx hardhat ignition deploy ./ignition/modules/QuoteStore.ts --network sepolia --verify
 
 ![Deployment](screenshots/deploy.png)
 

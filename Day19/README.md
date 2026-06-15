@@ -58,7 +58,7 @@ Day19/
 
 ![Hardhat](screenshots/hardhat.png)
 
-**Deployemnt** : npx hardhat ignition deploy ./ignition/modules/SimpleAuction.ts --network sepolia --verify
+**Deployemnt** : npx hardhat ignition deploy ./ignition/modules/OptimizedGasSaver.ts --network sepolia --verify
 
 ![Deployment](screenshots/deploy.png)
 
