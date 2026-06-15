@@ -1,4 +1,4 @@
-# 🚀 30-Day Solidity Smart Contract Challenge
+# 🚀 Solidity Smart Contract Challenge
 
 Welcome to the **Solidity Smart Contract Challenge** repository! This project documents a structured 30-day journey designed to master smart contract engineering, testing, gas optimization, and advanced on-chain architectures. 
 
@@ -12,7 +12,7 @@ The repository is organized into daily challenge folders. To ensure a comprehens
 
 *   **📅 Day 01 - Day 10 (Hardhat + TypeScript + Mocha & Chai)**: Focuses on compiling, deploying, and testing smart contracts using Hardhat, Ethers.js (v6), TypeScript, Mocha, and Chai.
 *   **📅 Day 11 - Day 20 (Hardhat + Solidity Forge-Std Tests)**: Focuses on writing tests directly in Solidity using `forge-std` (Foundry testing framework libraries) and executing them within the Hardhat environment, combining the speed of Solidity-based testing with Hardhat's task runner capabilities.
-*   **📅 Day 21 - Day 30 (Upcoming Challenges)**: Advanced topics including token standards (ERC-20, ERC-721, ERC-1155, ERC-4626), proxy patterns, security audits, and multi-signature wallets.
+
 
 ---
 
