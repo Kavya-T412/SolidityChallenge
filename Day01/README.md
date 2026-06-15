@@ -1,4 +1,4 @@
-# Day 01 - User Storage
+~# Day 01 - User Storage
 
 ## Overview
 User Storage is a Solidity smart contract project focused on storing, updating, retrieving, and deleting user profile data on-chain. It is a compact Hardhat exercise that demonstrates how persistent contract state behaves in a simple CRUD workflow.
@@ -53,6 +53,15 @@ Day01/
 - Verification: Successfully verified on Blockscout.
 
 ## Screenshots
+
+**Intialization** : npx hardhat --init
+
+![Hardhat](screenshots/hardhat.png)
+
+**Deployemnt** : npx hardhat ignition deploy ./ignition/modules/SimpleAuction.ts --network sepolia --verify
+
 ![Deployment](screenshots/deploy.png)
+
+**Testing Contracts** : npx hardhat test
 
 ![Test results](screenshots/test.png)

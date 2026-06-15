@@ -30,7 +30,7 @@ Day20/
 ├── test/
 │   └── SimpleAuction.t.sol # Foundry unit tests checking listing, active bidding, and claiming
 ├── scripts/
-│   └── send-op-tx.ts      # Utility script to dispatch transactions
+│   └── send-op-tx.ts      # Sample Utility script to dispatch transactions
 ├── ignition/
 │   └── modules/
 │       └── SimpleAuction.ts # Hardhat Ignition deployment module definition
@@ -54,9 +54,9 @@ Day20/
 - **Custom Revert Modifiers**: Utilizing modifiers to check contract state activity and custom error structures for gas efficiency.
 
 ## Project Summary
+- **Contract name**: SimpleAuction.
 - **Language used**: Solidity 0.8.28 and TypeScript.
 - **Tools used**: Hardhat, Hardhat Ignition, ethers v6, Mocha, Chai, and forge-std.
-- **Contract name**: SimpleAuction.
 - **Testing**: Hardhat and Foundry test suites passed successfully.
 - **Deployment status**: Deployed to Sepolia and verified on Blockscout.
 
@@ -66,8 +66,15 @@ Day20/
 - **Verification**: Successfully verified on Blockscout.
 
 ## Screenshots
+
+**Intialization** : npx hardhat --init
+
 ![Hardhat](screenshots/hardhat.png)
 
+**Deployemnt** : npx hardhat ignition deploy ./ignition/modules/SimpleAuction.ts --network sepolia --verify
+
 ![Deployment](screenshots/deploy.png)
+
+**Testing Contracts** : npx hardhat test
 
 ![Test results](screenshots/test.png)
