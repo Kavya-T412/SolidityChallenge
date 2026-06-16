@@ -39,9 +39,9 @@ The table below lists all daily challenge folders, the primary smart contracts c
 | **Day 15** | `WalletGuard.sol` | Hardhat + Forge-Std | Security gateway, transaction limitations, admin-configured whitelists |
 | **Day 16** | `DecentralizedPoll.sol` | Hardhat + Forge-Std | Dynamic multi-poll creations, voting statuses, state machines |
 | **Day 17** | `EmailRegistry.sol` | Hardhat + Forge-Std | Identity validator, email-hash binding, activation states |
-| **Day 18** | `StudentRecordSystem.sol`<br>`AcademicRecordManager.sol`<br>`AdminManager.sol`<br>`GradesManager.sol`<br>`StudentRegistry.sol`<br>`StudentStructs.sol`<br>`StudentTypes.sol`<br>`StudentUtils.sol`<br>`Utils.sol` | Hardhat + Forge-Std | **Modular System Architecture**: Deep inheritance hierarchy, utility libraries, multi-contract states, and role-based permissions |
+| **Day 18** | `StudentRecordSystem.sol (Main contract)`<br>`AcademicRecordManager.sol`<br>`AdminManager.sol`<br>`GradesManager.sol`<br>`StudentRegistry.sol`<br>`StudentStructs.sol`<br>`StudentTypes.sol`<br>`StudentUtils.sol`<br>`Utils.sol` | Hardhat + Forge-Std | **Modular System Architecture**: Deep inheritance hierarchy, utility libraries, multi-contract states, and role-based permissions |
 | **Day 19** | `OptimizedGasSaver.sol` | Hardhat + Forge-Std | **Gas Optimization**: Struct packing, custom error codes vs. strings, storage optimization, comparison analysis |
-| **Day 20** | `SimpleAuction.sol`<br>`AuctionHub.sol`<br>`AuctionStruct.sol`<br>`AuctionTypes.sol`<br>`BidZone.sol`<br>`Utils.sol` | Hardhat + Forge-Std | **Decentralized Auction Platform**: Escrow bid handling, outbid refund claims (pull-over-push), winner claims |
+| **Day 20** | `SimpleAuction.sol (Main contract)`<br>`AuctionHub.sol`<br>`AuctionStruct.sol`<br>`AuctionTypes.sol`<br>`BidZone.sol`<br>`Utils.sol` | Hardhat + Forge-Std | **Decentralized Auction Platform**: Escrow bid handling, outbid refund claims (pull-over-push), winner claims |
 
 ---
 
